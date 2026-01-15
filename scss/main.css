@@ -9,6 +9,10 @@ main {
   margin-bottom: 250px;
 }
 
+header {
+  padding: auto;
+}
+
 a {
   font-family: "Amaranth", serif;
 }
