@@ -1,0 +1,37 @@
+$primary: #1F3A2B;
+$secondary: #ACA79E;
+$tertiary: #809288;
+$quaternary: #FAC923;
+$dark: #555148;
+
+$font-family-sans-serif: "Amarante", sans-serif !default;
+$font-family-serif: "Amaranth", serif !default;
+
+html{
+    position:relative;
+    min-height:100%;
+}
+
+main{
+    margin-bottom: 250px;
+}
+
+
+
+a {
+    font-family: $font-family-serif;
+}
+
+
+
+footer.footer {
+    font-family: $font-family-serif;
+    color: #FAC923; 
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 1em;
+}
+
+
+@import "../node_modules/bootstrap/scss/bootstrap"

@@ -1,21 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <title>Document</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amarante&family=Amaranth:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/scss/main.css"/>
+
+    <title>Vite Et Gourmand</title>
   </head>
   <body>
-
-    <header>le menu</header>
+      <header>
+        <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+              <img src="logo.png" alt="Logo" width="50" height="50">
+            </a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link" href="/">Accueil</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/galerie">Nos Menus</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Connexion/Deconnexion</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Mon compte</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Contacts</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </header>
 
     <main id="main-page">
       <!--Le contenu de la page-->
     </main>
 
-    <button class="btn btn-primary">Cliquez ici</button>
+    <footer class="bg-dark text-center footer ">
+      <div class="row">
+        <div class="col-12 col-lg-4">
+          <p>Du Mardi au Dimanche<br/>
+            Matin: 08:00-14:00<br/>  
+            Soir: 16:00-23:00<br/>
+          horaires de prestations variables*</p>
+        </div>
+        <div class="col-6 col-lg-4">
+          <a href: "/cgv.html"> Conditions Génrérales de Ventes</a>
+        </div>
+        <div class="col-6 col-lg-4">
+          <a href: "/mentions_legales.html">Mentions Légales</a>
+        </div>
+      </div>
+    </footer>
 
-    <footer>Le footer</footer>
-  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="Router/router.js"></script>
-</body>
+    <script type="module" src="Router/router.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+  </body>
 </html>
