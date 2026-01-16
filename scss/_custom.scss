@@ -12,28 +12,40 @@ html{
     min-height:100%;
 }
 
+nav.navbar{
+    a{
+        font-family: $font-family-serif;
+    }
+}
+
+
+
+
 main{
-    margin-bottom: 250px;
+    margin-bottom: 190px;
 }
 
 header{
     padding: auto;
 }
 
-a {
-    font-family: $font-family-serif;
-}
 
 
 
 footer.footer {
     font-family: $font-family-serif;
-    color: #FAC923; 
+    color: #FAC923 !important; 
     position: absolute;
     bottom: 0;
     width: 100%;
     padding: 1em;
 }
 
+footer{
+    a{
+        color: #FAC923 !important;
+    }
+}
 
-@import "../node_modules/bootstrap/scss/bootstrap"
+@import "../scss/home.scss";
+@import "../node_modules/bootstrap/scss/bootstrap";

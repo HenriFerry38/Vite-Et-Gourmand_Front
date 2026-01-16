@@ -1,0 +1,132 @@
+$primary: #1F3A2B;
+$secondary: #ACA79E;
+$tertiary: #809288;
+$quaternary: #FAC923;
+$dark: #555148;
+
+$font-family-sans-serif: "Amarante", sans-serif !default;
+$font-family-serif: "Amaranth", serif !default;
+
+
+.hero {
+  // Placeholder "image" (en attendant l'API)
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.15)),
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 45%),
+    linear-gradient(90deg, rgba(170,120,80,.35), rgba(80,120,170,.30));
+  padding: 1rem 0;
+
+  .hero-inner {
+    min-height: 220px;
+  }
+}
+
+// PC: hero plus grand (comme sur une vraie home)
+@media (min-width: 992px) {
+  .hero {
+    padding: 2rem 0;
+
+    .hero-inner {
+      min-height: 360px;
+    }
+  }
+}
+
+.hero-title {
+  font-family: $font-family-sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: .5px;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  color: $quaternary !important;
+
+  -webkit-text-stroke: 1px #1f3b2e;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.intro {
+  background: #d9d7cf; // gris/beige de ta capture
+
+  .intro-box {
+    max-width: 860px;
+    font-size: 0.98rem;
+    background: rgba(255,255,255,.15);
+    border-radius: 14px;
+  }
+}
+
+@media (min-width: 992px) {
+  .intro .intro-box {
+    font-size: 1.05rem;
+  }
+}
+
+.engagements {
+  position: relative;
+
+  // Placeholder "photo" fond (en attendant)
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.25)),
+    linear-gradient(120deg, rgba(210,170,80,.35), rgba(60,110,90,.35));
+}
+
+.engagements-card {
+  max-width: 860px;
+  border-radius: 16px;
+  background: rgba(200, 200, 200, 0.60);
+  backdrop-filter: blur(2px);
+  color: white;
+
+}
+
+.engagements-list {
+  font-size: 1rem;
+}
+
+@media (min-width: 992px) {
+  .engagements-list {
+    font-size: 1.08rem;
+  }
+}
+
+.reviews {
+  background: #d9d7cf;
+}
+
+.review-pill {
+  background: #e7e7e7;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+// Avatar placeholder (carré gris arrondi -> cercle)
+.review-avatar {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 50%),
+    linear-gradient(140deg, rgba(0,0,0,.20), rgba(0,0,0,.05));
+  border: 2px solid rgba(255,255,255,.35);
+}
+
+@media (min-width: 992px) {
+  .review-avatar {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.btn-vetg {
+  font-family: $font-family-serif;
+  background: $primary !important;
+  color: $quaternary !important;
+  border: 0;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+
+  &:hover,
+  &:focus {
+    background: darken($primary, 6%);
+    color: $quaternary;
+  }
+}
