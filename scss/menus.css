@@ -1,0 +1,272 @@
+@charset "UTF-8";
+.page-menus {
+  padding-bottom: 2.5rem;
+  background: #d9d7cf;
+}
+
+/* HERO */
+.veg-hero {
+  padding-top: 1rem;
+}
+
+.veg-hero__wrapper {
+  border-radius: 1.75rem;
+  overflow: hidden;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+/* Media */
+.veg-hero__media {
+  position: relative;
+  min-height: 180px;
+  background: #2f3431; /* fallback */
+}
+
+/* Placeholder image */
+.veg-hero__imgPlaceholder {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.18), transparent 45%), linear-gradient(135deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.08));
+  filter: saturate(0.9);
+}
+
+/* Overlay sombre */
+.veg-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.55));
+}
+
+/* Titre */
+.veg-hero__title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffcc5c;
+  -webkit-text-stroke: 0.1px #1f3b2e;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 6px 18px rgba(0, 0, 0, 0.45);
+  border-radius: 999px;
+}
+
+.veg-menu-card {
+  background: #809288 !important;
+  border-radius: 4rem !important;
+  padding: 1rem !important;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Composant Menu (carte) */
+.veg-menu {
+  background: transparent;
+  border-radius: 1.5rem;
+}
+
+/* Top (bloc gris clair) */
+.veg-menu__top {
+  background: #e7e7e6;
+  border-radius: 1.25rem;
+  border: 3px solid rgba(50, 60, 55, 0.35);
+}
+
+.veg-menu__title {
+  font-weight: 900;
+  color: #ffcc5c !important; /* jaune titre */
+  font-size: 1.05rem;
+  margin: 0;
+  -webkit-text-stroke: 0.2px #1f3b2e;
+}
+
+.veg-menu__subtitle {
+  color: #1f2a25;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.veg-menu__desc {
+  color: #1f2a25;
+  font-size: 1rem !important;
+  line-height: 1.15rem;
+  margin-top: 0.15rem;
+  max-width: 14rem; /* garde l'équilibre mobile */
+}
+
+/* Media */
+.veg-menu__media {
+  border-radius: 1.25rem;
+  border: 3px solid rgba(50, 60, 55, 0.35);
+}
+
+.veg-menu__imgPlaceholder {
+  height: 190px;
+  background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.18), transparent 45%), linear-gradient(135deg, rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.1));
+}
+
+/* Flèches */
+.veg-menu__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  color: #24322c;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+}
+
+.veg-menu__arrow--left {
+  left: 0.5rem;
+}
+
+.veg-menu__arrow--right {
+  right: 0.5rem;
+}
+
+/* Label bas image */
+.veg-menu__label {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.5rem;
+  text-align: center;
+  font-weight: 900;
+  color: #ffcc5c;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+/* Pills meta */
+.veg-pill {
+  background: #d9d9d7;
+  border-radius: 0.75rem;
+  padding: 0.4rem 0.25rem;
+  border: 2px solid rgba(70, 80, 76, 0.25);
+}
+
+.veg-pill__k {
+  font-size: 0.7rem;
+  color: #2a3a33;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.veg-pill__v {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #25352e;
+}
+
+/* Liste des plats (grand bloc gris) */
+.veg-menu__list {
+  background: #e7e7e6;
+  border-radius: 1.25rem;
+  border: 3px solid rgba(50, 60, 55, 0.35);
+}
+
+.veg-menu__listTitle {
+  text-align: center;
+  font-weight: 900;
+  color: #ffcc5c;
+  font-size: 0.95rem;
+  -webkit-text-stroke: 0.2px #1f3b2e;
+}
+
+.veg-box {
+  background: rgba(112, 130, 122, 0.35);
+  border: 2px solid rgba(70, 80, 76, 0.25);
+  border-radius: 0.85rem;
+  padding: 0.45rem 0.45rem 0.25rem;
+  min-height: 100%;
+}
+
+.veg-box__title {
+  text-align: center;
+  font-weight: 900;
+  color: #22312a;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.veg-box__items {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.75rem;
+  color: #1f2a25;
+}
+.veg-box__items li {
+  margin-bottom: 0.2rem;
+}
+
+/* Bottom */
+.veg-btn {
+  background: #1f3b2f !important;
+  color: #ffcc5c !important;
+  font-weight: 900;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+}
+
+.veg-btn:hover,
+.veg-btn:focus {
+  color: #ffcc5c;
+  background: #193327;
+}
+
+.veg-stock {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+  padding-left: 0.25rem;
+}
+
+.veg-stock__label {
+  font-size: 0.8rem;
+  color: #17221e;
+  font-weight: 800;
+}
+
+.veg-stock__badge {
+  background: #bfe7b8;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  color: #15301f;
+  font-weight: 900;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+/* Responsive (PC) */
+@media (min-width: 992px) {
+  .veg-menu__imgPlaceholder {
+    height: 240px;
+  }
+  .veg-menu__desc {
+    max-width: 22rem;
+    font-size: 0.9rem;
+  }
+  .veg-menu__title {
+    font-size: 1.2rem;
+  }
+  .page-menus {
+    padding-top: 3rem;
+    padding-bottom: 3.5rem;
+  }
+  .veg-hero__media {
+    min-height: 260px;
+  }
+  .veg-hero__title {
+    font-size: 2.4rem;
+    padding: 1rem 2rem;
+  }
+}/*# sourceMappingURL=menus.css.map */
