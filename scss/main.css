@@ -9,7 +9,6 @@ p {
 
 li {
   font-family: "Amaranth", serif !important;
-  font-size: 18px;
 }
 
 a {
@@ -20,6 +19,7 @@ a {
 html {
   position: relative;
   min-height: 100%;
+  background-color: #d9d7cf;
 }
 
 nav.navbar a {
@@ -27,7 +27,7 @@ nav.navbar a {
 }
 
 main {
-  margin-bottom: 199px;
+  margin-bottom: 220px;
 }
 
 header {
@@ -40,7 +40,7 @@ footer.footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 1em;
+  padding: 0.5em;
 }
 
 footer a {

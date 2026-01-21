@@ -23,11 +23,31 @@
 }
 
 /* Placeholder image */
-.veg-hero__imgPlaceholder {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.18), transparent 45%), linear-gradient(135deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.08));
-  filter: saturate(0.9);
+.veg-hero__img {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+@media (min-width: 768px) {
+  .veg-hero__img {
+    height: 260px;
+  }
+}
+@media (min-width: 1200px) {
+  .veg-hero__img {
+    height: 300px;
+  }
+}
+.veg-hero__img img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+  display: block;
 }
 
 /* Overlay sombre */
@@ -87,7 +107,7 @@
 
 .veg-menu__desc {
   color: #1f2a25;
-  font-size: 1rem !important;
+  font-size: 0.75rem !important;
   line-height: 1.15rem;
   margin-top: 0.15rem;
   max-width: 14rem; /* garde l'équilibre mobile */
@@ -99,9 +119,31 @@
   border: 3px solid rgba(50, 60, 55, 0.35);
 }
 
-.veg-menu__imgPlaceholder {
-  height: 190px;
-  background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.18), transparent 45%), linear-gradient(135deg, rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.1));
+.veg-menu__img {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+@media (min-width: 768px) {
+  .veg-menu__img {
+    height: 260px;
+  }
+}
+@media (min-width: 1200px) {
+  .veg-menu__img {
+    height: 300px;
+  }
+}
+.veg-menu__img img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+  display: block;
 }
 
 /* Flèches */
@@ -199,7 +241,7 @@
 .veg-box__items {
   margin: 0;
   padding-left: 1rem;
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: #1f2a25;
 }
 .veg-box__items li {

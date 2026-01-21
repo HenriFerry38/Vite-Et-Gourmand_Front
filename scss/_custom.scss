@@ -10,6 +10,7 @@ $font-family-serif: "Amaranth", serif !default;
 html{
     position:relative;
     min-height:100%;
+    background-color: #d9d7cf;
 }
 
 nav.navbar{
@@ -22,7 +23,7 @@ nav.navbar{
 
 
 main{
-    margin-bottom: 199px;
+    margin-bottom: 220px;
 }
 
 header{
@@ -38,7 +39,7 @@ footer.footer {
     position: absolute;
     bottom: 0;
     width: 100%;
-    padding: 1em;
+    padding: 0.5em;
 }
 
 footer{

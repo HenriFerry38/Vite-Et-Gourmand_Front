@@ -1,6 +1,9 @@
 .hero {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 45%), linear-gradient(90deg, rgba(170, 120, 80, 0.35), rgba(80, 120, 170, 0.3));
-  padding: 1rem 0;
+  background-image: url(../images/delices_Viandard.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #d9d7cf;
 }
 .hero .hero-inner {
   min-height: 220px;
@@ -9,9 +12,16 @@
 @media (min-width: 992px) {
   .hero {
     padding: 2rem 0;
+    background-position: center top;
+    background-size: 90%;
   }
   .hero .hero-inner {
     min-height: 360px;
+  }
+}
+@media (min-width: 992px) {
+  .hero {
+    background-size: 80%;
   }
 }
 .hero-title {
@@ -42,7 +52,11 @@
 }
 .engagements {
   position: relative;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), linear-gradient(120deg, rgba(210, 170, 80, 0.35), rgba(60, 110, 90, 0.35));
+  background-color: #d9d7cf;
+  background-image: url(../images/professionalisme.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .engagements-card {
@@ -59,8 +73,17 @@
 }
 
 @media (min-width: 992px) {
+  .engagements {
+    background-position: center top;
+    background-size: 90%;
+  }
   .engagements-list {
     font-size: 1.08rem;
+  }
+}
+@media (min-width: 1200px) {
+  .engagements {
+    background-size: 80%;
   }
 }
 .reviews {
