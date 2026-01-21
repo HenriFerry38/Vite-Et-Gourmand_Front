@@ -6,14 +6,44 @@ p {
   font-family: "Amaranth", serif !important;
   font-size: 18px;
 }
+@media (min-width: 992px) {
+  p {
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 2560px) {
+  p {
+    font-size: 2rem;
+  }
+}
 
 li {
   font-family: "Amaranth", serif !important;
+}
+@media (min-width: 992px) {
+  li {
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 2560px) {
+  li {
+    font-size: 2rem;
+  }
 }
 
 a {
   font-family: "Amaranth", serif !important;
   font-size: 18px;
+}
+@media (min-width: 992px) {
+  a {
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 2560px) {
+  a {
+    font-size: 2rem;
+  }
 }
 
 html {
@@ -25,9 +55,19 @@ html {
 nav.navbar a {
   font-family: "Amaranth", serif;
 }
+@media (min-width: 2560px) {
+  nav.navbar a {
+    font-size: 30px;
+  }
+}
 
 main {
   margin-bottom: 220px;
+}
+@media (min-width: 2560px) {
+  main {
+    margin-bottom: 300px;
+  }
 }
 
 header {
@@ -45,6 +85,13 @@ footer.footer {
 
 footer a {
   color: #FAC923 !important;
+}
+
+@media (min-width: 2560px) {
+  .navbar-brand img {
+    height: 150px;
+    width: 150px;
+  }
 }
 
 /*!

@@ -47,7 +47,12 @@
 
 @media (min-width: 992px) {
   .intro .intro-box {
-    font-size: 1.05rem;
+    font-size: 3rem !important;
+  }
+}
+@media (min-width: 2560px) {
+  .intro .intro-box {
+    font-size: 3rem !important;
   }
 }
 .engagements {
@@ -69,7 +74,7 @@
 }
 
 .engagements-list {
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 @media (min-width: 992px) {
@@ -77,17 +82,57 @@
     background-position: center top;
     background-size: 90%;
   }
+  .engagements h2 {
+    font-size: 1.2rem;
+  }
   .engagements-list {
-    font-size: 1.08rem;
+    font-size: 1.2rem;
   }
 }
 @media (min-width: 1200px) {
   .engagements {
     background-size: 80%;
   }
+  .engagements h2 {
+    font-size: 1.5rem;
+  }
+  .engagements-list {
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 2560px) {
+  .engagements {
+    background-size: 80%;
+  }
+  .engagements h2 {
+    font-size: 2rem;
+  }
+  .engagements-list {
+    font-size: 2rem;
+  }
 }
 .reviews {
   background: #d9d7cf;
+}
+@media (min-width: 992px) {
+  .reviews p {
+    font-size: 1.2rem !important;
+  }
+}
+@media (min-width: 2560px) {
+  .reviews p {
+    font-size: 1.5rem !important;
+  }
+}
+@media (min-width: 992px) {
+  .reviews .fw-bold {
+    font-size: 1.2rem !important;
+  }
+}
+@media (min-width: 2560px) {
+  .reviews .fw-bold {
+    font-size: 1.5rem !important;
+  }
 }
 
 .review-pill {
@@ -110,6 +155,12 @@
     height: 64px;
   }
 }
+@media (min-width: 2560px) {
+  .review-avatar {
+    width: 104px;
+    height: 104px;
+  }
+}
 .btn-vetg {
   font-family: "Amaranth", serif;
   background: #1F3A2B !important;
@@ -120,4 +171,14 @@
 .btn-vetg:hover, .btn-vetg:focus {
   background: rgb(20.3415730337, 38.0584269663, 28.2157303371);
   color: #FAC923;
+}
+@media (min-width: 992px) {
+  .btn-vetg {
+    font-size: 1.6rem !important;
+  }
+}
+@media (min-width: 2560px) {
+  .btn-vetg {
+    font-size: 3rem !important;
+  }
 }/*# sourceMappingURL=home.css.map */

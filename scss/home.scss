@@ -63,7 +63,12 @@ $font-family-serif: "Amaranth", serif !default;
 
 @media (min-width: 992px) {
   .intro .intro-box {
-    font-size: 1.05rem;
+    font-size: 3rem !important;
+  }
+}
+@media (min-width: 2560px) {
+  .intro .intro-box {
+    font-size: 3rem !important;
   }
 }
 
@@ -87,26 +92,65 @@ $font-family-serif: "Amaranth", serif !default;
 }
 
 .engagements-list {
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 @media (min-width: 992px) {
   .engagements {
     background-position: center top;
     background-size: 90%;
+    h2{
+      font-size: 1.2rem;
+    }
   }
   .engagements-list {
-    font-size: 1.08rem;
+    font-size: 1.2rem;
   }
 }
 @media (min-width: 1200px) {
   .engagements {
+    h2{
+      font-size: 1.5rem;
+    }
     background-size: 80%;
+  }
+
+  .engagements-list {
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 2560px) {
+  .engagements {
+    h2{
+      font-size: 2rem;
+    }
+    background-size: 80%;
+  }
+
+  .engagements-list {
+    font-size: 2rem;
   }
 }
 
+
 .reviews {
   background: #d9d7cf;
+  p{
+    @media (min-width: 992px) {
+      font-size: 1.2rem !important;
+    }
+    @media (min-width: 2560px) {
+      font-size: 1.5rem !important;
+    }
+  }
+  .fw-bold{
+    @media (min-width: 992px) {
+      font-size: 1.2rem !important;
+    }
+    @media (min-width: 2560px) {
+      font-size: 1.5rem !important;
+    }
+  }
 }
 
 .review-pill {
@@ -132,6 +176,12 @@ $font-family-serif: "Amaranth", serif !default;
     height: 64px;
   }
 }
+@media (min-width: 2560px) {
+  .review-avatar {
+    width: 104px;
+    height: 104px;
+  }
+}
 
 .btn-vetg {
   font-family: $font-family-serif;
@@ -144,5 +194,11 @@ $font-family-serif: "Amaranth", serif !default;
   &:focus {
     background: darken($primary, 6%);
     color: $quaternary;
+  }
+  @media (min-width: 992px) {
+      font-size: 1.6rem !important;
+  }
+  @media (min-width: 2560px) {
+      font-size: 3rem !important;
   }
 }

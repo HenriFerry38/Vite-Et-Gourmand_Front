@@ -13,16 +13,33 @@ $font-family-serif: "Amaranth", serif !default;
 p{
     font-family: $font-family-serif !important;
     font-size: 18px;
+    @media (min-width: 992px) {
+        font-size: 1.5rem;
+    }
+    @media (min-width: 2560px) {
+        font-size: 2rem;
+    }
 }
 
 li {
     font-family: $font-family-serif !important;
-    
+    @media (min-width: 992px) {
+        font-size: 1.5rem;
+    }
+    @media (min-width: 2560px) {
+        font-size: 2rem;
+    }
 }
 
 a{
     font-family: $font-family-serif !important;
     font-size: 18px;
+    @media (min-width: 992px) {
+        font-size: 1.5rem;
+    }
+    @media (min-width: 2560px) {
+        font-size: 2rem;
+    }
 }
 
 @import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");

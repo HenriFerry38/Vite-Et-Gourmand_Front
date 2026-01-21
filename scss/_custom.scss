@@ -16,6 +16,10 @@ html{
 nav.navbar{
     a{
         font-family: $font-family-serif;
+
+        @media (min-width: 2560px) {
+            font-size: 30px;
+        }
     }
 }
 
@@ -24,6 +28,9 @@ nav.navbar{
 
 main{
     margin-bottom: 220px;
+    @media (min-width: 2560px) {
+        margin-bottom: 300px;
+  }
 }
 
 header{
@@ -48,6 +55,14 @@ footer{
     }
 }
 
+.navbar-brand{
+    img{
+        @media (min-width: 2560px) {
+            height: 150px;
+            width: 150px;
+        }
+    }
+}
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 
