@@ -1,14 +1,9 @@
 
+@import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");
+@import 'custom';
 
 
-$primary: #1F3A2B;
-$secondary: #ACA79E;
-$tertiary: #809288;
-$quaternary: #FAC923;
-$dark: #555148;
 
-$font-family-sans-serif: "Amarante", sans-serif !default;
-$font-family-serif: "Amaranth", serif !default;
 
 p{
     font-family: $font-family-serif !important;
@@ -41,8 +36,16 @@ a{
         font-size: 2rem;
     }
 }
+.form-label{
+    color: $primary !important;
+    @media (min-width: 992px) {
+        font-size: 1.5rem;
+    }
+    @media (min-width: 2560px) {
+        font-size: 2rem;
+    }
+}
 
-@import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");
 @import "../scss/home.css";
 @import "../scss/menus.css";
-@import 'custom';
+@import "../scss/signin.css";

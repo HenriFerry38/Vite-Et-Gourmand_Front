@@ -1,0 +1,25 @@
+@import "../scss/custom";
+
+label{
+    .form-label{
+        color: $primary !important;
+        @media (min-width: 992px) {
+            font-size: 1.5rem !important;
+        }
+        @media (min-width: 2560px) {
+            font-size: 2rem !important;
+        }
+    }
+}
+
+.text-center{
+    font-family: $font-family-serif ;
+}
+
+div{  
+
+    .container{
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+}
