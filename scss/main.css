@@ -12093,4 +12093,8 @@ a {
   .form-label {
     font-size: 2rem;
   }
+}
+
+input {
+  font-family: "Amaranth", serif !important;
 }/*# sourceMappingURL=main.css.map */

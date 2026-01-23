@@ -3,8 +3,6 @@
 @import 'custom';
 
 
-
-
 p{
     font-family: $font-family-serif !important;
     font-size: 18px;
@@ -36,6 +34,7 @@ a{
         font-size: 2rem;
     }
 }
+
 .form-label{
     color: $primary !important;
     @media (min-width: 992px) {
@@ -44,6 +43,10 @@ a{
     @media (min-width: 2560px) {
         font-size: 2rem;
     }
+}
+
+input{
+    font-family: $font-family-serif !important;
 }
 
 @import "../scss/home.css";
