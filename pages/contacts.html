@@ -1,0 +1,130 @@
+<main class="py-4">
+    <section class="veg-hero mb-4">
+        <div class="container">
+            <div class="veg-hero__wrapper">
+                <div class="veg-hero__media">
+                    <div class="veg-hero__img">
+                        <img src="../images/delices_Viandard.jpg" alt="Hero Page Menu">
+                    </div>
+
+                    
+                    <div class="veg-hero__overlay d-flex align-items-center justify-content-center">
+                    <h1 class="veg-hero__title">Contacts</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="container">
+        <div class="text-center mb-4">
+        <p class="text-muted mb-0">Une question, une demande spéciale, un souci de commande ? Écris-nous.</p>
+        </div>
+
+        <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-semibold mb-3">Nos coordonnées</h2>
+
+                <ul class="list-unstyled mb-4">
+                <li class="d-flex gap-2 mb-3">
+                    <span aria-hidden="true">📍</span>
+                    <div>
+                    <div class="fw-semibold">Adresse</div>
+                    <div class="text-muted">Vite Et Gourmand,
+                        12 rue des Gourmands,
+                        33000 Bordeaux</div>
+                    </div>
+                </li>
+
+                <li class="d-flex gap-2 mb-3">
+                    <span aria-hidden="true">📞</span>
+                    <div>
+                    <div class="fw-semibold">Téléphone</div>
+                    <a class="text-decoration-none" href="tel:+33401020304">+33 4 01 02 03 04</a>
+                    </div>
+                </li>
+
+                <li class="d-flex gap-2 mb-3">
+                    <span aria-hidden="true">✉️</span>
+                    <div>
+                    <div class="fw-semibold">Email</div>
+                    <a class="text-decoration-none" href="mailto:contact@viteetgourmand.fr">contact@viteetgourmand.fr</a>
+                    </div>
+                </li>
+
+                <li class="d-flex gap-2">
+                    <span aria-hidden="true">🕒</span>
+                    <div>
+                    <div class="fw-semibold">Horaires</div>
+                    <div class="text-muted">
+                        Mar–Dim : 08:00–14:00 & 16:00–23:00<br />
+                        <small>Horaires variables selon prestations*</small>
+                    </div>
+                    </div>
+                </li>
+                </ul>
+
+                <div class="p-3 rounded-4 bg-light">
+                <div class="fw-semibold mb-1">Réponse rapide</div>
+                <div class="text-muted small">On répond généralement sous 24h (hors dimanche soir).</div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-semibold mb-3">Écris-nous</h2>
+
+                <form>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                    <label for="contactNom" class="form-label">Nom</label>
+                    <input type="text" class="form-control" id="contactNom" placeholder="Ton nom" required />
+                    </div>
+                    <div class="col-12 col-md-6">
+                    <label for="contactPrenom" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" id="contactPrenom" placeholder="Ton prénom" required />
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                    <label for="contactEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="contactEmail" placeholder="nom@exemple.com" required />
+                    </div>
+
+                    <div class="col-12">
+                    <label for="contactSujet" class="form-label">Sujet</label>
+                    <select class="form-select" id="contactSujet" required>
+                        <option value="" selected disabled>Choisir un sujet</option>
+                        <option>Question sur un menu</option>
+                        <option>Modification / annulation de commande</option>
+                        <option>Allergies / régimes</option>
+                        <option>Partenariat</option>
+                        <option>Autre</option>
+                    </select>
+                    </div>
+
+                    <div class="col-12">
+                    <label for="contactMessage" class="form-label">Message</label>
+                    <textarea class="form-control" id="contactMessage" rows="5" placeholder="Dis-nous tout 👇" required></textarea>
+                    </div>
+
+                    <div class="col-12 d-flex flex-column flex-sm-row gap-2 justify-content-end mt-2">
+                    <button type="reset" class="btn btn-outline-secondary">Effacer</button>
+                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                    </div>
+                </div>
+
+                <p class="text-muted small mt-3 mb-0">
+                    En envoyant ce formulaire, tu acceptes d’être recontacté par email.
+                </p>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section>
+</main>

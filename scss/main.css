@@ -12080,6 +12080,14 @@ a {
   }
 }
 
+select {
+  font-family: "Amaranth", serif;
+}
+
+.fw-semibold {
+  font-family: "Amarante", sans-serif !important;
+}
+
 .form-label {
   color: #1F3A2B !important;
 }

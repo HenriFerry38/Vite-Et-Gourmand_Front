@@ -35,6 +35,14 @@ a{
     }
 }
 
+select{
+    font-family: $font-family-serif;
+}
+
+.fw-semibold{
+    font-family: $font-family-sans-serif !important;
+}
+
 .form-label{
     color: $primary !important;
     @media (min-width: 992px) {

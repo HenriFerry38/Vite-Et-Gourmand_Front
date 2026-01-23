@@ -6,6 +6,7 @@ export const allRoutes = [
     new Route("/menus", "Nos Menus", "/pages/menus.html"),
     new Route("/cgv", "Conditions Générales de Vente", "/pages/cgv.html"),
     new Route("/mentions_legales", "Mentions Légales", "/pages/mentions_legales.html"),
+    new Route("/contacts", "Contacts", "/pages/contacts.html"),
     new Route("/signin", "Connexion", "/pages/auth/signin.html"),
     new Route("/signup", "Inscription", "/pages/auth/signup.html"),
     new Route("/account", "Mon compte", "/pages/auth/account.html"),
