@@ -30,6 +30,11 @@ const LoadContentPage = async () => {
   const html = await fetch(actualRoute.pathHtml).then((data) => data.text());
   // Ajout du contenu HTML à l'élément avec l'ID "main-page"
   document.getElementById("main-page").innerHTML = html;
+  
+  if (window.location.pathname === "/editCommande") {
+    const mod = await import("/script/commandeHoraire.js");
+    mod.initCommandeHoraire();
+  }
 
   // Ajout du contenu JavaScript
   if (actualRoute.pathJS != "") {
@@ -62,3 +67,4 @@ window.onpopstate = LoadContentPage;
 window.route = routeEvent;
 // Chargement du contenu de la page au chargement initial
 LoadContentPage();
+

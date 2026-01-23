@@ -1,0 +1,64 @@
+<body> 
+    <main>
+        <section class="veg-hero mb-4">
+            <div class="container">
+                <div class="veg-hero__wrapper">
+                    <div class="veg-hero__media">
+                        <div class="veg-hero__img">
+                            <img src="../images/delices_Viandard.jpg" alt="Hero Page Menu">
+                        </div>
+
+                        
+                        <div class="veg-hero__overlay d-flex align-items-center justify-content-center">
+                        <h1 class="veg-hero__title">Modifier sa commande</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container">
+            <h2>Menu</h2>
+            <div>
+                <p>Le menu selectionné pour cette commande et ses informations</p>
+            </div>
+        </div>
+        <div class="container">
+            <form>
+                <div class="mb-3">
+                    <label for="NbPersonneInput" class="form-label">Nombres de personne</label>
+                    <input type="number" class="form-control" id="NbPersonneInput" name="NbPersonnes"> 
+                </div>
+                <div class="mb-3">
+                    <label for="DateInput" class="form-label">Date de prestation</label>
+                    <input type="date" class="form-control" id="DateInput" placeholder="Est ce le bon jour de livraison ?" name="Date"> 
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="serviceChoisi" id="matinRadio" value="matin">
+                        <label class="form-check-label" for="matinRadio">
+                            Matin
+                        </label>
+                        </div>
+                        <div class="form-check">
+                        <input class="form-check-input" type="radio" name="serviceChoisi" id="soirRadio" value="soir" checked>
+                        <label class="form-check-label" for="soirRadio">
+                            Soir
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="selectHour" class="form-label">Heure de prestation</label>
+                    <select class="form-select" id="selectHour" name="Heure"></select>
+                </div>
+                <div class="text-center p-3">
+                    <button type="submit" class="btn btn-primary">Modifier la commande</button>
+                    <a href="/deleteCommande" type="button" class="btn btn-danger">Annuler la commande</a>
+                </div>
+            </form>
+        </div>
+        <div class="text-center">
+            <a href="/historiqueCommande">Retournez a vos commandes</a>
+        </div>
+    </main>
+    <script src="/script/commandeHoraire.js"></script>
+</body>
