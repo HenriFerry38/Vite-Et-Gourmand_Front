@@ -7,7 +7,7 @@ export const allRoutes = [
     new Route("/cgv", "Conditions Générales de Vente", "/pages/cgv.html"),
     new Route("/mentions_legales", "Mentions Légales", "/pages/mentions_legales.html"),
     new Route("/contacts", "Contacts", "/pages/contacts.html"),
-    new Route("/signin", "Connexion", "/pages/auth/signin.html"),
+    new Route("/signin", "Connexion", "/pages/auth/signin.html", "/script/auth/signin.js"),
     new Route("/signup", "Inscription", "/pages/auth/signup.html", "/script/auth/signup.js"),
     new Route("/account", "Mon compte", "/pages/auth/account.html"),
     new Route("/editPassword","Modifier son mot de passe", "/pages/auth/editPassword.html"),
