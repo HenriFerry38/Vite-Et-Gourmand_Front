@@ -20,43 +20,76 @@
         <form>
             <div class="mb-3">
                 <label for="NomInput" class="form-label">Nom</label>
-                <input type="text" class="form-control" id="NomInput" placeholder="Votre nom" name="Nom"> 
+                <input type="text" class="form-control" id="NomInput" placeholder="Votre nom" name="Nom">
+                <div class="invalid-feedback">
+                    Le nom est requis.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="PrenomInput" class="form-label">Prénom</label>
                 <input type="text" class="form-control" id="PrenomInput" placeholder="Votre prénom" name="Prenom"> 
+                <div class="invalid-feedback">
+                    Le prénom est requis.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="TelephoneInput" class="form-label">Téléphone</label>
                 <input type="text" class="form-control" id="TelephoneInput" placeholder="06.xx.xx.xx.xx" name="Telephone"> 
+                <div class="invalid-feedback">
+                    Le téléphone est requis.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="AdresseInput" class="form-label">Adresse</label>
                 <input type="text" class="form-control" id="AdresseInput" placeholder="Votre adresse" name="Adresse"> 
+                <div class="invalid-feedback">
+                    L'adresse est requise.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="VilleInput" class="form-label">Ville</label>
                 <input type="text" class="form-control" id="VilleInput" placeholder="Votre ville" name="Ville"> 
+                <div class="invalid-feedback">
+                    La ville est requise.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="CodePostalInput" class="form-label">Code Postal</label>
                 <input type="text" class="form-control" id="CodePostalInput" placeholder="Votre code postal" name="CodePostal"> 
+                <div class="invalid-feedback">
+                    Le code postal est requis.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="PaysInput" class="form-label">Pays</label>
                 <input type="text" class="form-control" id="PaysInput" placeholder="Votre Pays" name="Pays"> 
+                <div class="invalid-feedback">
+                    Le pays est requis.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="EmailInput" class="form-label">Email</label>
-                <input type="email" class="form-control" id="EmailInput" placeholder="VotreEmail@mail.com" name="Email"> 
+                <input type="email" class="form-control" id="EmailInput" placeholder="VotreEmail@mail.com" name="Email">
+                <div class="invalid-feedback">
+                    Le mail n'est pas au bon format.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="PasswordInput" class="form-label">Mot de passe</label>
                 <input type="password" class="form-control" id="PasswordInput" name="Password">
+                <div class="invalid-feedback">
+                    Le mot de passe n'est pas assez robuste ! Au minimum 8 caractères, dont 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial.
+                </div>
+                <div class="valid-feedback">
+                    Le mot de passe est robuste !
+                </div>
             </div>
             <div class="mb-3">
-                <label for="ValidatePasswordInput" class="form-label">Validez votre mot de passe</label>
+                <label for="ValidatePasswordInput" class="form-label">Confirmez votre mot de passe</label>
                 <input type="password" class="form-control" id="ValidatePasswordInput" name="PasswordConfirm">
+                <div class="invalid-feedback">
+                    La confirmation n'est pas identique au mot de passe !
+                </div>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary" id="btn-validate-inscription">Inscription</button>
