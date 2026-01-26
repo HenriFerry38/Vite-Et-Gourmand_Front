@@ -12,7 +12,7 @@ function checkCredentials(){
         const token = "JeSuisUnTokenDeFouFurieuxHolalala";
         setToken(token);
         //placer le token en cookies
-
+        setCookie(roleCookieName, "admin", 7);
         window.location.replace("/");
     }
     else{
