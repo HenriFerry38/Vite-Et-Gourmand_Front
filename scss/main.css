@@ -12104,4 +12104,8 @@ select {
 
 input {
   font-family: "Amaranth", serif !important;
+}
+
+textarea .form-control .placeholder {
+  font-family: "Amaranth", serif !important;
 }/*# sourceMappingURL=main.css.map */

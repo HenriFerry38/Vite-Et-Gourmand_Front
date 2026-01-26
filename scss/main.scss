@@ -57,6 +57,14 @@ input{
     font-family: $font-family-serif !important;
 }
 
+textarea{
+    .form-control{ 
+        .placeholder{
+            font-family: $font-family-serif !important;
+        }
+    }
+}
+
 @import "../scss/home.css";
 @import "../scss/menus.css";
 @import "../scss/signin.css";
