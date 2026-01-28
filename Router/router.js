@@ -2,7 +2,18 @@ import Route from "./route.js";
 import { allRoutes, websiteName } from "./allRoutes.js";
 
 // Création d'une route pour la page 404 (page introuvable)
-const route404 = new Route("404", "Page introuvable", "/pages/404.html");
+const route404 = new Route("404", "Page introuvable", "/pages/404.html", []);
+
+// --- LOADER ---
+const showLoader = () => {
+  const loader = document.getElementById("app-loader");
+  if (loader) loader.classList.remove("is-hidden");
+};
+
+const hideLoader = () => {
+  const loader = document.getElementById("app-loader");
+  if (loader) loader.classList.add("is-hidden");
+};
 
 // Fonction pour récupérer la route correspondant à une URL donnée
 const getRouteByUrl = (url) => {
@@ -23,35 +34,75 @@ const getRouteByUrl = (url) => {
 
 // Fonction pour charger le contenu de la page
 const LoadContentPage = async () => {
-  const path = window.location.pathname;
-  // Récupération de l'URL actuelle
-  const actualRoute = getRouteByUrl(path);
-  // Récupération du contenu HTML de la route
-  const html = await fetch(actualRoute.pathHtml).then((data) => data.text());
-  // Ajout du contenu HTML à l'élément avec l'ID "main-page"
-  document.getElementById("main-page").innerHTML = html;
-  
-  if (window.location.pathname === "/editCommande") {
-    const mod = await import("/script/commandeHoraire.js");
-    mod.initCommandeHoraire();
+  showLoader();
+
+  try {
+    const path = window.location.pathname;
+    const actualRoute = getRouteByUrl(path);
+
+    // Vérifications des droits d'accès à la page
+    const allRolesArray = actualRoute.authorize;
+
+    if (allRolesArray.length > 0) {
+      if (allRolesArray.includes("disconnected")) {
+        if (isConnected()) {
+          hideLoader(); 
+          window.location.replace("/");
+          return;
+        }
+      } else {
+        const roleUser = getRole();
+        if (!allRolesArray.includes(roleUser)) {
+          hideLoader(); 
+          window.location.replace("/");
+          return;
+        }
+      }
+    }
+
+    const response = await fetch(actualRoute.pathHtml);
+
+    // Si le fichier HTML n'existe pas / erreur serveur → 404
+    if (!response.ok) {
+      const fallback = await fetch(route404.pathHtml);
+      document.getElementById("main-page").innerHTML = await fallback.text();
+    } else {
+      const html = await response.text();
+      document.getElementById("main-page").innerHTML = html;
+    }
+    //Insertion du script horaire pour la modification de commande
+    if (window.location.pathname === "/editCommande") {
+      const mod = await import("/script/commandeHoraire.js");
+      mod.initCommandeHoraire();
+    }
+
+    // Ajout du JS de page
+    if (actualRoute.pathJS != "") {
+      const scriptTag = document.createElement("script");
+      scriptTag.setAttribute("type", "text/javascript");
+      scriptTag.setAttribute("src", actualRoute.pathJS);
+      document.body.appendChild(scriptTag);
+    }
+
+    document.title = actualRoute.title + " - " + websiteName;
+
+    // Afficher / masquer éléments selon les rôles
+    await Promise.resolve(showAndHideElementsForRoles());
+
+  } catch (error) {
+    console.error("Erreur lors du chargement de la page :", error);
+
+    // afficher la 404 si crash
+    try {
+      const fallback = await fetch(route404.pathHtml);
+      document.getElementById("main-page").innerHTML = await fallback.text();
+    } catch (e) {
+      // si même la 404 échoue, au moins on évite de bloquer
+    }
+  } finally {
+    // on enlève le loader
+    hideLoader();
   }
-
-  // Ajout du contenu JavaScript
-  if (actualRoute.pathJS != "") {
-    // Création d'une balise script
-    var scriptTag = document.createElement("script");
-    scriptTag.setAttribute("type", "text/javascript");
-    scriptTag.setAttribute("src", actualRoute.pathJS);
-
-    // Ajout de la balise script au corps du document
-    document.querySelector("body").appendChild(scriptTag);
-  }
-
-  // Changement du titre de la page
-  document.title = actualRoute.title + " - " + websiteName;
-
-  //Afficher et Masquer des éléments suivant les roles.
-  showAndHideElementsForRoles();
 };
 
 // Fonction pour gérer les événements de routage (clic sur les liens)

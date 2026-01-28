@@ -11,40 +11,49 @@
     <title>Vite Et Gourmand</title>
   </head>
   <body>
-      <header>
-        <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
-          <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-              <img src="../images/Logo_ViteEtGourmand.png" alt="Logo" width="100" height="100">
-            </a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link" href="/">Accueil</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/menus">Nos Menus</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/account">Mon compte</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/contacts">Contacts</a>
-                </li>
-                <li class="nav-item" data-show="disconnected">
-                  <a class="nav-link" href="/signin">Connexion</a>
-                </li>
-                <li class="nav-item" data-show="connected">
-                  <a class="nav-link" id="signoutBtn">Déconnexion</a>
-                </li>
-              </ul>
-            </div>
+    <!-- LOADER -->
+    <div id="app-loader" class="app-loader" aria-live="polite" aria-busy="true">
+      <div class="app-loader__box">
+        <div class="spinner-border" role="status" aria-label="Chargement...">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="app-loader__text m-0">Chargement…</p>
+      </div>
+    </div>
+    <header>
+      <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">
+            <img src="../images/Logo_ViteEtGourmand.png" alt="Logo" width="100" height="100">
+          </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="/">Accueil</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/menus" onclick="route(event)">Nos Menus</a>
+              </li>
+              <li class="nav-item" data-show="connected">
+                <a class="nav-link" href="/account" onclick="route(event)">Mon compte</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/contacts" onclick="route(event)">Contacts</a>
+              </li>
+              <li class="nav-item" data-show="disconnected">
+                <a class="nav-link" href="/signin" onclick="route(event)">Connexion</a>
+              </li>
+              <li class="nav-item" data-show="connected">
+                <a class="nav-link" id="signoutBtn" onclick="route(event)">Déconnexion</a>
+              </li>
+            </ul>
           </div>
-        </nav>
-      </header>
+        </div>
+      </nav>
+    </header>
 
     <main id="main-page">
       <!--Le contenu de la page-->

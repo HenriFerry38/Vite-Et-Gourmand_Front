@@ -12108,4 +12108,42 @@ input {
 
 textarea .form-control .placeholder {
   font-family: "Amaranth", serif !important;
+}
+
+.app-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.2s ease;
+}
+
+.app-loader.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-loader__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  background: #809288;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.app-loader__text {
+  font-family: "Amarante", serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.2px;
 }/*# sourceMappingURL=main.css.map */
