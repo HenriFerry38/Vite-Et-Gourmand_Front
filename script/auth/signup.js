@@ -10,6 +10,7 @@ const inputEmail = document.getElementById("EmailInput");
 const inputPassword = document.getElementById("PasswordInput");
 const inputValidatePassword = document.getElementById("ValidatePasswordInput");
 const btnValidation = document.getElementById("btn-validate-inscription");
+const formInscription = document.getElementById("formulaireInscription");
 
 inputNom.addEventListener("keyup", validateForm);
 inputPrenom.addEventListener("keyup", validateForm);
@@ -22,7 +23,7 @@ inputEmail.addEventListener("keyup", validateForm);
 inputPassword.addEventListener("keyup", validateForm);
 inputValidatePassword.addEventListener("keyup", validateForm);
 
-
+btnValidation.addEventListener("click", InscrireUtilisateur);
 
 function validateForm(){
     const nomOk = validateRequired(inputNom);
@@ -106,4 +107,46 @@ function validateRequired(input){
         input.classList.add("is-invalid");
         return false;
     }
+}
+
+function InscrireUtilisateur(){
+    const dataForm = new FormData(formInscription);
+
+    
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+        "prenom": dataForm.get("Prenom"),
+        "nom": dataForm.get("Nom"),
+        "email": dataForm.get("Email"),
+        "password": dataForm.get("Password"),
+        "telephone": dataForm.get("Telephone"),
+        "adresse": dataForm.get("Adresse"),
+        "code_postal": dataForm.get("CodePostal"),
+        "ville": dataForm.get("Ville"),
+        "pays": dataForm.get("Pays")
+    });
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    fetch(apiUrl+"/registration", requestOptions)
+    .then(response => {
+        if(response.ok){
+        return response.json();
+        }
+        else{
+            alert("Erreur los de l'inscription");
+        }
+    })
+    .then(result => { 
+        alert("Bravo"+dataForm.get("Prenom")+", vous êtes maintenant inscrit chez les Gourmands, vous pouvez vous connecter.")
+        document.location.href="/signin"
+    })
+    .catch((error) => console.error(error));
 }
