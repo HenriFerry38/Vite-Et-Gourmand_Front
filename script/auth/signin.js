@@ -23,7 +23,7 @@ function checkCredentials(){
         redirect: "follow"
     };
 
-    fetch(apiUrl+"/login", requestOptions)
+    fetch(apiUrl+"login", requestOptions)
     .then(response => {
         if(response.ok){
             return response.json();

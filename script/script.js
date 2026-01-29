@@ -1,7 +1,7 @@
 const tokenCookieName = "accesstoken";
 const roleCookieName = "role";
 const signoutBtn = document.getElementById("signoutBtn");
-const apiUrl = "http://127.0.0.1:8000/api";
+const apiUrl = "http://127.0.0.1:8000/api/";
 
 signoutBtn.addEventListener("click", signout);
 
@@ -74,17 +74,17 @@ function showAndHideElementsForRoles(){
                 }
                 break;
             case 'admin' :
-                if(!userConnected || role != "admin"){
+                if(!userConnected || role != "ROLE_ADMIN"){
                     element.classList.add("d-none");
                 }
                 break;
             case 'employe' :
-                if(!userConnected || role != "employe"){
+                if(!userConnected || role != "ROLE_EMPLOYE"){
                     element.classList.add("d-none");
                 }
                 break;
             case 'utilisateur' :
-                if(!userConnected || role != "user"){
+                if(!userConnected || role != "ROLE_USER"){
                     element.classList.add("d-none");
                 }
                 break;
