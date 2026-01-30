@@ -12146,4 +12146,11 @@ textarea .form-control .placeholder {
   font-family: "Amarante", serif;
   font-size: 1.1rem;
   letter-spacing: 0.2px;
+}
+
+@media (min-width: 2560px) {
+  .veg-hero__title {
+    font-size: 3rem;
+    padding: 1.1rem 2.4rem;
+  }
 }/*# sourceMappingURL=main.css.map */

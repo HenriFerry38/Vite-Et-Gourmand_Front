@@ -15,13 +15,114 @@
                     <h1 class="veg-hero__title">Nos Menus</h1>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <div class="container mt-4">
+            <div id="menus-container" class="menus-grid"></div>
+        </div>
+
+        <template id="menu-template">
+
+            <div class="card veg-menu-card border-0 shadow-lg mb-4">
+
+                <div class="card-body p-2 p-sm-3">
+
+                    <article class="veg-menu">
+
+                        <div class="veg-menu__top p-3">
+                            <div class="d-flex justify-content-between gap-3">
+
+                                <div>
+                                    <h3 class="veg-menu__title mb-1"></h3>
+                                    <div class="veg-menu__subtitle"></div>
+                                </div>
+
+                                <p class="veg-menu__desc mb-0"></p>
+                            </div>
+                        </div>
+
+                        
+                        <div class="veg-menu__media position-relative mx-3">
+                                <div class="veg-menu__img">
+                                    <img class="veg-menu__photo" src="../images/placeholder.jpg">
+                                </div>
+
+                            <div class="veg-menu__label"></div>
+                        </div>
+
+                        <div class="veg-menu__meta px-3 pt-2">
+                            <div class="row g-2">
+
+                                <div class="col-12 col-md-4">
+                                    <div class="veg-pill text-center">
+                                        <div class="veg-pill__k">Régime :</div>
+                                        <div class="veg-pill__v veg-regime"></div>
+                                    </div>
+                                </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="veg-pill text-center">
+                                    <div class="veg-pill__k">Nb pers. mini :</div>
+                                    <div class="veg-pill__v veg-nb"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="veg-pill text-center">
+                                    <div class="veg-pill__k">Prix :</div>
+                                    <div class="veg-pill__v veg-prix"></div>
+                                </div>
+                            </div>
+
+                            </div>
+                        </div>
+
+                        <div class="veg-menu__list mx-3 mt-2 p-3">
+                            <h4 class="veg-menu__listTitle mb-2">Liste des plats</h4>
+
+                            <div class="row g-2">
+                                <div class="col-12 col-md-4">
+                                    <div class="veg-box">
+                                        <div class="veg-box__title">Entrées</div>
+                                        <ul class="veg-box__items menu-entrees"></ul>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="veg-box">
+                                        <div class="veg-box__title">Plats</div>
+                                        <ul class="veg-box__items menu-plats"></ul>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="veg-box">
+                                        <div class="veg-box__title">Desserts</div>
+                                        <ul class="veg-box__items menu-desserts"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="veg-menu__bottom d-flex align-items-center justify-content-between gap-2 px-3 pt-2 pb-3">
+
+                            <a class="btn veg-btn w-100 menu-link">Réservez votre menu</a>
+
+                            <div class="veg-stock">
+                                <span class="veg-stock__label">Stock :</span>
+                                <span class="veg-stock__badge menu-stock"></span>
+                            </div>
+                        </div>
+
+                    </article>
+
                 </div>
 
             </div>
-        </section>
-        <div class="container mt-4">
-            <div id="menus-container"></div>
-        </div>
+
+        </template>
     </main>
 
     <script type="module" src="../scripts/menu.js"></script>

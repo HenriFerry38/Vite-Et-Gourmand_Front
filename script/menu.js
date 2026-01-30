@@ -15,124 +15,60 @@ function listOrPlaceholder(items, emptyLabel = "—") {
 
 
 function renderMenu(menu) {
-    const plats = Array.isArray(menu.plats) ? menu.plats : [];
 
-    const normalizeCat = (s) =>
-        (s ?? "")
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-  
-    const entrees = plats.filter(p => normalizeCat(p.categorie) === "entree");
-    const platsPrincipaux = plats.filter(p => normalizeCat(p.categorie) === "plat");
-    const desserts = plats.filter(p => normalizeCat(p.categorie) === "dessert");
+  const template = document.getElementById("menu-template");
+  const clone = template.content.cloneNode(true);
 
-    return `
-    <div class="card veg-menu-card border-0 shadow-lg mb-4">
-        <div class="card-body p-2 p-sm-3">
+  clone.querySelector(".veg-menu__title").textContent = menu.titre;
+  clone.querySelector(".veg-menu__subtitle").textContent =
+    "Thème " + (menu.theme?.libelle ?? "?");
 
-        <article class="veg-menu">
+  clone.querySelector(".veg-menu__desc").textContent =
+    menu.description ?? "";
 
-            <!-- Top -->
-            <div class="veg-menu__top p-3">
-            <div class="d-flex justify-content-between gap-3">
-                <div>
-                <h3 class="veg-menu__title mb-1">${escapeHtml(menu.titre)}</h3>
-                <div class="veg-menu__subtitle">Thème ${escapeHtml(menu.theme?.libelle ?? "?")}</div>
-                </div>
+  clone.querySelector(".veg-regime").textContent =
+    menu.regime?.libelle ?? "?";
 
-                <p class="veg-menu__desc mb-0">
-                ${escapeHtml(menu.description ?? "")}
-                </p>
-            </div>
-            </div>
+  clone.querySelector(".veg-nb").textContent =
+    menu.nb_personne_mini ?? 1;
 
-            <!-- Image -->
-            <div class="veg-menu__media position-relative mx-3">
-            <div class="veg-menu__img">
-                <img src="../images/placeholder.jpg" alt="${escapeHtml(menu.titre)}">
-            </div>
+  clone.querySelector(".veg-prix").textContent =
+    (menu.prix_par_personne ?? "?") + "€ / pers";
 
-            <button class="veg-menu__arrow veg-menu__arrow--left" type="button">‹</button>
-            <button class="veg-menu__arrow veg-menu__arrow--right" type="button">›</button>
 
-            <div class="veg-menu__label">${escapeHtml(menu.titre)}</div>
-            </div>
+  clone.querySelector(".menu-stock").textContent =
+    (menu.quantite_restaurant ?? 0) + " menus";
 
-            <!-- Meta -->
-            <div class="veg-menu__meta px-3 pt-2">
-            <div class="row g-2">
-                <div class="col-4">
-                <div class="veg-pill text-center">
-                    <div class="veg-pill__k">Régime :</div>
-                    <div class="veg-pill__v">${escapeHtml(menu.regime?.libelle ?? "?")}</div>
-                </div>
-                </div>
-                <div class="col-4">
-                <div class="veg-pill text-center">
-                    <div class="veg-pill__k">Nb pers. mini :</div>
-                    <div class="veg-pill__v">${menu.nb_personne_mini ?? 1}</div>
-                </div>
-                </div>
-                <div class="col-4">
-                <div class="veg-pill text-center">
-                    <div class="veg-pill__k">Prix mini :</div>
-                    <div class="veg-pill__v">${menu.prix_par_personne ?? "?"}€ / pers</div>
-                </div>
-                </div>
-            </div>
-            </div>
+  clone.querySelector(".menu-link").href =
+    "/reservation.html?id=" + menu.id;
 
-            <!-- Liste des plats -->
-            <div class="veg-menu__list mx-3 mt-2 p-3">
-            <h4 class="veg-menu__listTitle mb-2">Liste des plats</h4>
+  const plats = Array.isArray(menu.plats) ? menu.plats : [];
 
-            <div class="row g-2">
-                <div class="col-4">
-                <div class="veg-box">
-                    <div class="veg-box__title">Entrée(s)</div>
-                    <ul class="veg-box__items">
-                    ${listOrPlaceholder(entrees, "Aucune entrée")}
-                    </ul>
-                </div>
-                </div>
+  const normalizeCat = (s) =>
+    (s ?? "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
-                <div class="col-4">
-                <div class="veg-box">
-                    <div class="veg-box__title">Plat(s)</div>
-                    <ul class="veg-box__items">
-                    ${listOrPlaceholder(platsPrincipaux, "Aucun plat")}
-                    </ul>
-                </div>
-                </div>
+  const entrees = plats.filter(p => normalizeCat(p.categorie) === "entree");
+  const platsPrincipaux = plats.filter(p => normalizeCat(p.categorie) === "plat");
+  const desserts = plats.filter(p => normalizeCat(p.categorie) === "dessert");
 
-                <div class="col-4">
-                <div class="veg-box">
-                    <div class="veg-box__title">Dessert(s)</div>
-                    <ul class="veg-box__items">
-                    ${listOrPlaceholder(desserts, "Aucun dessert")}
-                    </ul>
-                </div>
-                </div>
-            </div>
-            </div>
+  const ulEntrees = clone.querySelector(".menu-entrees");
+  const ulPlats = clone.querySelector(".menu-plats");
+  const ulDesserts = clone.querySelector(".menu-desserts");
 
-            <!-- Bottom -->
-            <div class="veg-menu__bottom d-flex align-items-center justify-content-between gap-2 px-3 pt-2 pb-3">
-            <a href="/reservation.html?id=${menu.id}" class="btn veg-btn w-100">Réservez votre menu</a>
+  entrees.forEach(p => ulEntrees.innerHTML += `<li>${p.titre}</li>`);
+  platsPrincipaux.forEach(p => ulPlats.innerHTML += `<li>${p.titre}</li>`);
+  desserts.forEach(p => ulDesserts.innerHTML += `<li>${p.titre}</li>`);
 
-            <div class="veg-stock">
-                <span class="veg-stock__label">Stock :</span>
-                <span class="veg-stock__badge">${menu.quantite_restaurant ?? 0} menus</span>
-            </div>
-            </div>
+  if (entrees.length === 0) ulEntrees.innerHTML = `<li class="text-muted">Aucune entrée</li>`;
+  if (platsPrincipaux.length === 0) ulPlats.innerHTML = `<li class="text-muted">Aucun plat</li>`;
+  if (desserts.length === 0) ulDesserts.innerHTML = `<li class="text-muted">Aucun dessert</li>`;
 
-        </article>
-
-        </div>
-    </div>
-    `;
+  return clone;
 }
+
 
 async function loadAllMenus() {
   const container = document.getElementById("menus-container");
@@ -157,8 +93,12 @@ async function loadAllMenus() {
       return;
     }
 
-    container.innerHTML = menus.map(renderMenu).join("");
+    container.innerHTML = "";
 
+    menus.forEach(menu => {
+      container.appendChild(renderMenu(menu));
+    });
+    
   } catch (e) {
     console.error(e);
     container.innerHTML = `

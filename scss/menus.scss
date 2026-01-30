@@ -75,12 +75,17 @@
   border-radius: 999px;
 }
 
+.menus-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
 .veg-menu-card {
   background: #809288 !important;                 
   border-radius: 4rem !important;              
   padding: 1rem !important;
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin: 0 !important;
 }
 
 /* Composant Menu (carte) */
@@ -285,7 +290,7 @@
 /* Responsive (PC) */
 @media (min-width: 992px) {
   .veg-menu__imgPlaceholder { height: 240px; }
-  .veg-menu__desc { max-width: 22rem; font-size: .9rem; }
+  .veg-menu__desc { max-width: 22rem; }
   .veg-menu__title { font-size: 1.2rem; }
   .page-menus {
     padding-top: 3rem;
@@ -299,4 +304,145 @@
     font-size: 2.4rem;
     padding: 1rem 2rem;
   }
+}
+
+
+/* ===========================
+   FIX RESPONSIVE TYPO + WRAP
+   =========================== */
+
+.veg-menu {
+  /* échelle fluide */
+  --fs-title: clamp(1.05rem, 1.2vw + .65rem, 1.6rem);
+  --fs-sub: clamp(.85rem, .6vw + .65rem, 1.05rem);
+  --fs-desc: clamp(.85rem, .6vw + .6rem, 1.05rem);
+  --fs-pill-k: clamp(.70rem, .4vw + .55rem, .85rem);
+  --fs-pill-v: clamp(.82rem, .5vw + .6rem, 1.05rem);
+  --fs-list-title: clamp(.95rem, .6vw + .65rem, 1.2rem);
+  --fs-box-title: clamp(.78rem, .45vw + .55rem, .95rem);
+  --fs-list-item: clamp(.85rem, .55vw + .6rem, 1.05rem);
+  --fs-label: clamp(.85rem, .55vw + .6rem, 1.05rem);
+}
+
+.veg-menu__title { font-size: var(--fs-title); }
+.veg-menu__subtitle { font-size: var(--fs-sub); }
+.veg-menu__desc {
+  font-size: var(--fs-desc) !important; /* remplace ton 0.75rem figé */
+  max-width: none; /* laisse respirer */
+}
+
+.veg-pill__k { font-size: var(--fs-pill-k); }
+.veg-pill__v { font-size: var(--fs-pill-v); }
+
+.veg-menu__listTitle { font-size: var(--fs-list-title); }
+.veg-box__title { font-size: var(--fs-box-title); }
+.veg-box__items { font-size: var(--fs-list-item); }
+
+.veg-menu__label { font-size: var(--fs-label); }
+
+/* Empêche les mots de se casser en "Chocola / ts" */
+.veg-menu__title,
+.veg-menu__desc,
+.veg-box__items li {
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+
+/* Top: sur mobile, on passe en colonne (moins compressé) */
+@media (max-width: 575.98px) {
+  .veg-menu__top .d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .veg-menu__desc {
+    margin-top: .5rem;
+  }
+}
+
+/* ====== 4K / ULTRA-WIDE TUNING ====== */
+
+/* 1) Empêche tes cards de devenir trop larges sur ultra écran */
+.page-menus .container {
+  max-width: 1200px;
+}
+
+@media (min-width: 1400px) {
+  .page-menus .container {
+    max-width: 1320px;
+  }
+}
+
+/* 2) À partir de 2560px, on "grossit" un peu la carte */
+@media (min-width: 2560px) {
+  .veg-menu-card {
+    transform: scale(1.08);
+    transform-origin: top center;
+  }
+
+  /* un peu plus d’air */
+  .veg-menu-card {
+    padding: 1.25rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .menus-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem; 
+  }
+}
+
+@media (min-width: 1200px) {
+  .veg-menu__title { font-size: 1.55rem; }
+  .veg-menu__subtitle { font-size: 1.05rem; }
+
+  .veg-menu__desc {
+    font-size: 1.05rem !important;
+    line-height: 1.55rem;
+    max-width: 28rem; 
+  }
+
+  .veg-pill__k { font-size: .85rem; }
+  .veg-pill__v { font-size: 1.1rem; }
+
+  .veg-menu__label { font-size: 1.05rem; }
+
+  .veg-menu__listTitle { font-size: 1.25rem; }
+  .veg-box__title { font-size: .95rem; }
+  .veg-box__items { font-size: 1.05rem; }
+
+  .veg-btn { font-size: 1.1rem; padding: .7rem 1.2rem; }
+  .veg-stock__label { font-size: .95rem; }
+  .veg-stock__badge { font-size: .95rem; }
+}
+
+.veg-box__items li {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+@media (min-width: 2560px) {
+  .veg-menu__title { font-size: 1.55rem; }
+  .veg-menu__subtitle { font-size: 1.05rem; }
+
+  .veg-menu__desc {
+    font-size: 1.05rem !important;
+    line-height: 1.55rem;
+    max-width: 28rem; 
+  }
+
+  .veg-pill__k { font-size: .85rem; }
+  .veg-pill__v { font-size: 1.1rem; }
+
+  .veg-menu__label { font-size: 1.05rem; }
+
+  .veg-menu__listTitle { font-size: 1.25rem; }
+  .veg-box__title { font-size: .95rem; }
+  .veg-box__items { font-size: 1.05rem; }
+
+  .veg-btn { font-size: 1.1rem; padding: .7rem 1.2rem; }
+  .veg-stock__label { font-size: .95rem; }
+  .veg-stock__badge { font-size: .95rem; }
 }
