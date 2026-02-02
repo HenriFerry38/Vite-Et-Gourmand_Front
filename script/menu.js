@@ -21,7 +21,7 @@ function renderMenu(menu) {
 
   clone.querySelector(".veg-menu__title").textContent = menu.titre;
   clone.querySelector(".veg-menu__subtitle").textContent =
-    "Thème " + (menu.theme?.libelle ?? "?");
+    menu.theme?.libelle ?? "?";
 
   clone.querySelector(".veg-menu__desc").textContent =
     menu.description ?? "";
@@ -39,8 +39,18 @@ function renderMenu(menu) {
   clone.querySelector(".menu-stock").textContent =
     (menu.quantite_restaurant ?? 0) + " menus";
 
-  clone.querySelector(".menu-link").href =
-    "/reservation.html?id=" + menu.id;
+  const a = clone.querySelector(".menu-link")
+    a.href = `/menu-detail?id=${encodeURIComponent(menu.id)}`;
+    a.addEventListener("click", (e) => {
+      if (!isConnected()) {
+        e.preventDefault();
+        alert("Pour commander, veuillez vous connecter.");
+        const target = `/menu-detail?id=${menu.id}`;
+        window.location.href = `/signin?redirect=${encodeURIComponent(target)}`;
+        return;
+      }
+      route(e);
+    });
 
   const plats = Array.isArray(menu.plats) ? menu.plats : [];
 
@@ -78,7 +88,10 @@ async function loadAllMenus() {
 
   try {
     const res = await fetch(`${apiUrl}menu/all`, {
-      headers: { "Accept": "application/json" }
+      headers: { 
+        "Accept": "application/json"
+       },
+      
     });
 
     if (!res.ok) {

@@ -1,0 +1,221 @@
+<main class="page-menus">
+  <section class="veg-hero mb-4">
+    <div class="container">
+      <div class="veg-hero__wrapper">
+        <div class="veg-hero__media">
+          <div class="veg-hero__img">
+            <img src="../images/delices_Viandard.jpg" alt="Hero Page Menu">
+          </div>
+
+          <div class="veg-hero__overlay d-flex align-items-center justify-content-center">
+            <h1 class="veg-hero__title" id="detail-hero-title">Détail du menu</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container mt-4">
+    <div class= "menu-detail-wrapper">
+        <div id="menu-detail-container"></div>
+
+        <!-- ✅ tes 2 cards ajoutées -->
+        <div id="menu-detail-extras" class="d-none">
+
+        <!-- ✅ Liste des plats -->
+        <div class="card shadow-sm border-0 mt-3 res-card">
+            <div class="card-body p-3">
+            <h3 class="res-listTitle text-center mb-3">Liste des plats</h3>
+
+            <div class="row g-2">
+                <div class="col-4">
+                <div class="res-box">
+                    <div class="res-box__title">Entrée(s) :</div>
+                    <ul class="res-box__items" id="res-entrees"></ul>
+                    <a class="res-link" href="#" id="res-all-entrees">Allergènes</a>
+                </div>
+                </div>
+
+                <div class="col-4">
+                <div class="res-box">
+                    <div class="res-box__title">Plat(s) :</div>
+                    <ul class="res-box__items" id="res-plats"></ul>
+                    <a class="res-link" href="#" id="res-all-plats">Allergènes</a>
+                </div>
+                </div>
+
+                <div class="col-4">
+                <div class="res-box">
+                    <div class="res-box__title">Dessert :</div>
+                    <ul class="res-box__items" id="res-desserts"></ul>
+                    <a class="res-link" href="#" id="res-all-desserts">Allergènes</a>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+            <form id="reservation-form" novalidate class="mt-2">
+
+                <!-- ✅ INFOS CLIENT -->
+                <div class="res-formBlock">
+                    <h3 class="res-section__title mb-2">Vos informations</h3>
+
+                    <div class="row g-2">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small mb-1" for="clientNom">Nom</label>
+                        <input class="form-control form-control-sm" type="text" id="clientNom" required>
+                        <div class="invalid-feedback">Nom requis.</div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small mb-1" for="clientPrenom">Prénom</label>
+                        <input class="form-control form-control-sm" type="text" id="clientPrenom" required>
+                        <div class="invalid-feedback">Prénom requis.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small mb-1" for="clientAdresse">Adresse</label>
+                        <input class="form-control form-control-sm" type="text" id="clientAdresse" required>
+                        <div class="invalid-feedback">Adresse requise.</div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small mb-1" for="clientTelephone">Téléphone</label>
+                        <input class="form-control form-control-sm" type="tel" id="clientTelephone" required>
+                        <div class="invalid-feedback">Téléphone requis.</div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- ✅ INFOS COMMANDE -->
+                <div class="res-formBlock mt-3">
+                    <h3 class="res-section__title mb-2">Votre commande</h3>
+
+                    <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small mb-1" for="datePrestation">Date</label>
+                        <input class="form-control form-control-sm" type="date" id="datePrestation" required>
+                        <div class="invalid-feedback">Choisis une date.</div>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label small mb-1" for="heurePrestation">Heure</label>
+                        <input class="form-control form-control-sm" type="time" id="heurePrestation" required>
+                        <div class="invalid-feedback">Choisis une heure.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small mb-1" for="nbPersonnes">Nombre de personnes</label>
+                        <input class="form-control form-control-sm" type="number" id="nbPersonnes" min="1" step="1" required>
+                        <div class="invalid-feedback">Indique le nombre de personnes.</div>
+                    </div>
+                    </div>
+                </div>
+            <!-- ✅ Conditions + formulaire (style maquette) -->
+            <div class="card shadow-sm border-0 mt-3 res-card">
+            <div class="card-body p-3 res-reservation">
+
+                <div class="res-section">
+                <h3 class="res-section__title">Conditions de réservation :</h3>
+                <ul class="res-section__list" id="res-conditions-reservation">
+                    <li>Pensez à réserver ce menu au minimum 24h à l’avance.</li>
+                    <li>Aucun retour de matériel prévu sur ce menu.</li>
+                    <li>Vérifier les risques d’allergies avant toute commande.</li>
+                </ul>
+                </div>
+
+                <div class="res-section mt-3">
+                <h3 class="res-section__title">Conditions de stockage :</h3>
+                <ul class="res-section__list" id="res-conditions-stockage">
+                    <li>Si vous avez des restes, conservez au frais et consommez rapidement (24h à 48h max).</li>
+                </ul>
+                </div>
+
+                <div class="res-reservation__bottom mt-3">
+                <div class="d-flex justify-content-end">
+                    <div class="res-stockPill">
+                    <span class="res-stockPill__label">Stock :</span>
+                    <span class="res-stockPill__value" id="res-stock">—</span>
+                    </div>
+                </div>
+
+                <form id="reservation-form" novalidate class="mt-2">
+                    <div class="res-check">
+                        <input class="form-check-input" type="checkbox" id="conditions" required>
+                        <label class="form-check-label" for="conditions">
+                            J’ai pris connaissance des conditions de réservations et de stockage
+                        </label>
+                        <div class="invalid-feedback">Tu dois accepter les conditions.</div>
+                    </div>
+                   
+                    <button class="btn res-cta w-100 mt-3" type="submit" id="btn-commandez" disabled>
+                    COMMANDER
+                    </button>
+                </form>
+                </div>
+
+            </div>
+        </div>
+
+
+        <p id="menu-detail-error" class="text-danger text-center my-4 d-none"></p>
+    </div>
+
+    <!-- ✅ template de base (ta card menu) -->
+    <template id="menu-template">
+      <div class="card veg-menu-card border-0 shadow-lg mb-4">
+        <div class="card-body p-2 p-sm-3">
+          <article class="veg-menu">
+
+            <div class="veg-menu__top p-3">
+              <div class="d-flex justify-content-between gap-3">
+                <div>
+                  <h3 class="veg-menu__title mb-1"></h3>
+                  <div class="veg-menu__subtitle"></div>
+                </div>
+                <p class="veg-menu__desc mb-0"></p>
+              </div>
+            </div>
+
+            <div class="veg-menu__media position-relative mx-3">
+              <div class="veg-menu__img">
+                <img class="veg-menu__photo" src="../images/placeholder.jpg">
+              </div>
+              <div class="veg-menu__label"></div>
+            </div>
+
+            <div class="veg-menu__meta px-3 pt-2">
+              <div class="row g-2">
+
+                <div class="col-12 col-md-4">
+                  <div class="veg-pill text-center">
+                    <div class="veg-pill__k">Régime :</div>
+                    <div class="veg-pill__v veg-regime"></div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="veg-pill text-center">
+                    <div class="veg-pill__k">Nb pers. mini :</div>
+                    <div class="veg-pill__v veg-nb"></div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="veg-pill text-center">
+                    <div class="veg-pill__k">Prix :</div>
+                    <div class="veg-pill__v veg-prix"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </article>
+        </div>
+      </div>
+    </template>
+  </div>
+</main>
+
+<script src="../script/menu-detail.js"></script>

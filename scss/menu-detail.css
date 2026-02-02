@@ -1,9 +1,4 @@
 @charset "UTF-8";
-@import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");
-@import "../scss/home.css";
-@import "../scss/menus.css";
-@import "../scss/signin.css";
-@import "../scss/menu-detail.css";
 html {
   position: relative;
   min-height: 100%;
@@ -12037,121 +12032,270 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-p {
-  font-family: "Amaranth", serif !important;
-  font-size: 18px;
-}
-@media (min-width: 992px) {
-  p {
-    font-size: 1.5rem;
-  }
-}
-@media (min-width: 2560px) {
-  p {
-    font-size: 2rem;
-  }
+/* =========================
+   MENU DETAIL - EXTRAS (res-*)
+   ========================= */
+.res-card {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
 }
 
-li {
-  font-family: "Amaranth", serif !important;
-}
-@media (min-width: 992px) {
-  li {
-    font-size: 1.5rem;
-  }
-}
-@media (min-width: 2560px) {
-  li {
-    font-size: 2rem;
-  }
+.res-listTitle {
+  font-family: "Amarante", serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
+  color: #243f34;
 }
 
-a {
-  font-family: "Amaranth", serif !important;
-  font-size: 18px;
-}
-@media (min-width: 992px) {
-  a {
-    font-size: 1.2rem;
-  }
-}
-@media (min-width: 2560px) {
-  a {
-    font-size: 2rem;
-  }
+.res-box {
+  background: #f6f6f3;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 10px 10px 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-select {
+.res-box__title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #243f34;
+  text-align: center;
+}
+
+.res-box__items {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 0.83rem;
+  color: #2b2b2b;
+  flex: 1;
+}
+
+.res-box__items li {
+  padding: 4px 6px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.res-box__items li:last-child {
+  margin-bottom: 0;
+}
+
+.res-link {
+  display: inline-block;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #243f34;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(36, 63, 52, 0.08);
+  border: 1px solid rgba(36, 63, 52, 0.12);
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.res-link:hover {
+  background: rgba(36, 63, 52, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Stock badge version "res" */
+.res-stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.res-stock__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #243f34;
+}
+
+.res-stock__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #243f34;
+  color: #f4c84a;
+  font-weight: 800;
+  font-size: 0.83rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Form "conditions" */
+#reservation-form .form-check-input {
+  border-color: rgba(36, 63, 52, 0.35);
+}
+
+#reservation-form .form-check-input:checked {
+  background-color: #243f34;
+  border-color: #243f34;
+}
+
+#reservation-form .form-check-label {
+  color: #2b2b2b;
   font-family: "Amaranth", serif;
 }
 
-.fw-semibold {
+/* Bouton commande (si tu veux une variante locale) */
+#btn-commandez {
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 10px 18px;
+  font-family: "Amaranth", serif;
+}
+
+/* Responsive: sur desktop on aère un peu */
+@media (min-width: 768px) {
+  .res-listTitle {
+    font-size: 1.15rem;
+  }
+  .res-box {
+    padding: 12px 12px 10px;
+  }
+  .res-box__items li {
+    padding: 6px 8px;
+  }
+}
+/* =========================
+   Reservation block (maquette)
+   ========================= */
+.res-reservation {
+  background: transparent;
+}
+
+.res-section__title {
+  font-weight: 800;
+  color: #243f34;
+  margin: 0 0 8px;
+}
+
+.res-section__list {
+  margin: 0;
+  padding-left: 18px;
+  color: #2b2b2b;
+  line-height: 1.35;
+}
+
+.res-section__list li {
+  margin-bottom: 6px;
+}
+
+.res-section__list li:last-child {
+  margin-bottom: 0;
+}
+
+/* Stock pill à droite, comme sur la maquette */
+.res-stockPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(36, 63, 52, 0.1);
+  border: 1px solid rgba(36, 63, 52, 0.18);
   font-family: "Amarante", sans-serif !important;
 }
 
-.form-label {
-  color: #1F3A2B !important;
-}
-@media (min-width: 992px) {
-  .form-label {
-    font-size: 1.5rem;
-  }
-}
-@media (min-width: 2560px) {
-  .form-label {
-    font-size: 2rem;
-  }
+.res-stockPill__label {
+  font-weight: 800;
+  color: #243f34;
+  font-family: "Amarante", sans-serif !important;
 }
 
-input {
-  font-family: "Amaranth", serif !important;
+.res-stockPill__value {
+  font-weight: 900;
+  color: #243f34;
+  background: rgba(244, 200, 74, 0.35);
+  border: 1px solid rgba(244, 200, 74, 0.55);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: "Amarante", sans-serif !important;
 }
 
-textarea .form-control .placeholder {
-  font-family: "Amaranth", serif !important;
-}
-
-.app-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.45);
-  -webkit-backdrop-filter: blur(2px);
-          backdrop-filter: blur(2px);
-  opacity: 1;
-  pointer-events: all;
-  transition: opacity 0.2s ease;
-}
-
-.app-loader.is-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.app-loader__box {
+/* Checkbox centrée comme sur la maquette */
+.res-check {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 16px;
-  background: #809288;
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  gap: 8px;
+  margin-top: 6px;
 }
 
-.app-loader__text {
-  font-family: "Amarante", serif;
-  font-size: 1.1rem;
-  letter-spacing: 0.2px;
+.res-check .form-check-input {
+  margin: 0;
+  border-color: rgba(36, 63, 52, 0.35);
 }
 
-@media (min-width: 2560px) {
-  .veg-hero__title {
-    font-size: 3rem;
-    padding: 1.1rem 2.4rem;
-  }
-}/*# sourceMappingURL=main.css.map */
+.res-check .form-check-input:checked {
+  background-color: #243f34;
+  border-color: #243f34;
+}
+
+.res-check .form-check-label {
+  font-size: 0.75rem;
+  color: #2b2b2b;
+  font-family: "Amaranth", serif;
+}
+
+/* Gros bouton arrondi "COMMANDEZ" */
+.res-cta {
+  border-radius: 999px;
+  background: #1F3A2B !important;
+  color: #FAC923 !important;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  padding: 13px 18px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.res-cta:disabled {
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.res-cta:not(:disabled):hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+/* ==============================
+   GRAND BLOC MENU DETAIL (VERT)
+   ============================== */
+.menu-detail-wrapper {
+  background: #809288; /* ton vert/gris */
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
+  /* ✅ pour que tout respire */
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.res-formBlock {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(36, 63, 52, 0.12);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.res-formBlock .form-control {
+  border-radius: 12px;
+  border-color: rgba(0, 0, 0, 0.12);
+}/*# sourceMappingURL=menu-detail.css.map */

@@ -47,12 +47,13 @@ function eraseCookie(name) {
 }
 
 function isConnected(){
-    if(getToken() == null || getToken == undefined){
+    const token = getToken();
+
+    if(token === null || token === undefined || token === ""){
         return false;
     }
-    else{
-        return true;
-    }
+
+    return true;
 }
 
 function showAndHideElementsForRoles(){
