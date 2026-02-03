@@ -159,7 +159,7 @@ function setupOrderForm(menu) {
   checkbox?.addEventListener("change", syncBtn);
   syncBtn();
 
-  form.addEventListener("submit", async (e) => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
 
     // Guard connecté
@@ -179,6 +179,7 @@ function setupOrderForm(menu) {
     // Payload minimal (adapte selon ton backend si besoin)
     const payload = {
         menu_id: menu.id,
+        adresse_prestation: document.getElementById("clientAdresseLivraison").value,
         nb_personne: Number(document.getElementById("nbPersonnes").value),
         date_prestation: document.getElementById("datePrestation").value,   // "YYYY-MM-DD"
         heure_prestation: document.getElementById("heurePrestation").value, // "HH:mm"
@@ -224,7 +225,7 @@ function setupOrderForm(menu) {
         syncBtn();
       }
     }
-  });
+  };
 }
 
 async function fetchCurrentUser() {
@@ -299,6 +300,9 @@ function fillUl(id, items, emptyLabel) {
 function bindAllergenLink(linkId, plats) {
   const a = document.getElementById(linkId);
   if (!a) return;
+
+  if (a.dataset.bound === "1") return;
+  a.dataset.bound = "1";
 
   a.addEventListener("click", (e) => {
     e.preventDefault();

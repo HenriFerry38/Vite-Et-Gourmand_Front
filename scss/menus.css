@@ -258,6 +258,11 @@
   margin-bottom: 0.2rem;
 }
 
+.btn-secondary {
+  background: #bfe7b8 !important;
+  border: 2px solid #1f3b2f;
+}
+
 /* Bottom */
 .veg-btn {
   background: #1f3b2f !important;

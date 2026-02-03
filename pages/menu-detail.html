@@ -17,100 +17,106 @@
 
   <div class="container mt-4">
     <div class= "menu-detail-wrapper">
-        <div id="menu-detail-container"></div>
+      <form id="reservation-form" novalidate class="mt-2">
+        <!-- ✅ INFOS CLIENT -->
+        <div class="res-formBlock">
+          <h3 class="res-section__title mb-2">Vos informations</h3>
 
-        <!-- ✅ tes 2 cards ajoutées -->
-        <div id="menu-detail-extras" class="d-none">
-
-        <!-- ✅ Liste des plats -->
-        <div class="card shadow-sm border-0 mt-3 res-card">
-            <div class="card-body p-3">
-            <h3 class="res-listTitle text-center mb-3">Liste des plats</h3>
-
-            <div class="row g-2">
-                <div class="col-4">
-                <div class="res-box">
-                    <div class="res-box__title">Entrée(s) :</div>
-                    <ul class="res-box__items" id="res-entrees"></ul>
-                    <a class="res-link" href="#" id="res-all-entrees">Allergènes</a>
-                </div>
-                </div>
-
-                <div class="col-4">
-                <div class="res-box">
-                    <div class="res-box__title">Plat(s) :</div>
-                    <ul class="res-box__items" id="res-plats"></ul>
-                    <a class="res-link" href="#" id="res-all-plats">Allergènes</a>
-                </div>
-                </div>
-
-                <div class="col-4">
-                <div class="res-box">
-                    <div class="res-box__title">Dessert :</div>
-                    <ul class="res-box__items" id="res-desserts"></ul>
-                    <a class="res-link" href="#" id="res-all-desserts">Allergènes</a>
-                </div>
-                </div>
+          <div class="row g-2">
+            <div class="col-12 col-md-6">
+              <label class="form-label small mb-1" for="clientNom">Nom</label>
+              <input class="form-control form-control-sm" type="text" id="clientNom" required>
+              <div class="invalid-feedback">Nom requis.</div>
             </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small mb-1" for="clientPrenom">Prénom</label>
+              <input class="form-control form-control-sm" type="text" id="clientPrenom" required>
+              <div class="invalid-feedback">Prénom requis.</div>
             </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small mb-1" for="clientMail">Email</label>
+              <input class="form-control form-control-sm" type="text" id="clientMail" required>
+              <div class="invalid-feedback">Adresse email requise.</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label small mb-1" for="clientAdresseLivraison">Adresse de livraison</label>
+              <input class="form-control form-control-sm" type="text" id="clientAdresseLivraison" required>
+              <div class="invalid-feedback">Adresse de livraison requise.</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label small mb-1" for="clientTelephone">Téléphone</label>
+              <input class="form-control form-control-sm" type="tel" id="clientTelephone" required>
+              <div class="invalid-feedback">Téléphone requis.</div>
+            </div>
+          </div>
         </div>
-            <form id="reservation-form" novalidate class="mt-2">
 
-                <!-- ✅ INFOS CLIENT -->
-                <div class="res-formBlock">
-                    <h3 class="res-section__title mb-2">Vos informations</h3>
+        <!-- ✅ INFOS COMMANDE -->
+        <div class="res-formBlock mt-3">
+          <h3 class="res-section__title mb-2">Votre commande</h3>
 
-                    <div class="row g-2">
-                    <div class="col-12 col-md-6">
-                        <label class="form-label small mb-1" for="clientNom">Nom</label>
-                        <input class="form-control form-control-sm" type="text" id="clientNom" required>
-                        <div class="invalid-feedback">Nom requis.</div>
+            <div id="menu-detail-container"></div>
+
+            <div id="menu-detail-extras" class="d-none">
+
+              <!-- ✅ Liste des plats -->
+              <div class="card shadow-sm border-0 mt-3 res-card">
+                <div class="card-body p-3">
+                  <h3 class="res-listTitle text-center mb-3">Liste des plats</h3>
+
+                  <div class="row g-2">
+                    <div class="col-4">
+                      <div class="res-box">
+                        <div class="res-box__title">Entrée(s) :</div>
+                        <ul class="res-box__items" id="res-entrees"></ul>
+                        <a class="res-link" href="#" id="res-all-entrees">Allergènes</a>
+                      </div>
                     </div>
 
-                    <div class="col-12 col-md-6">
-                        <label class="form-label small mb-1" for="clientPrenom">Prénom</label>
-                        <input class="form-control form-control-sm" type="text" id="clientPrenom" required>
-                        <div class="invalid-feedback">Prénom requis.</div>
-                    </div>
+                    <div class="col-4">
+                      <div class="res-box">
+                        <div class="res-box__title">Plat(s) :</div>
+                          <ul class="res-box__items" id="res-plats"></ul>
+                          <a class="res-link" href="#" id="res-all-plats">Allergènes</a>
+                        </div>
+                      </div>
 
-                    <div class="col-12">
-                        <label class="form-label small mb-1" for="clientAdresse">Adresse</label>
-                        <input class="form-control form-control-sm" type="text" id="clientAdresse" required>
-                        <div class="invalid-feedback">Adresse requise.</div>
+                      <div class="col-4">
+                        <div class="res-box">
+                          <div class="res-box__title">Dessert :</div>
+                          <ul class="res-box__items" id="res-desserts"></ul>
+                          <a class="res-link" href="#" id="res-all-desserts">Allergènes</a>
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                </div>
+              </div>
 
-                    <div class="col-12 col-md-6">
-                        <label class="form-label small mb-1" for="clientTelephone">Téléphone</label>
-                        <input class="form-control form-control-sm" type="tel" id="clientTelephone" required>
-                        <div class="invalid-feedback">Téléphone requis.</div>
-                    </div>
-                    </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small mb-1" for="datePrestation">Date</label>
+                  <input class="form-control form-control-sm" type="date" id="datePrestation" required>
+                  <div class="invalid-feedback">Choisis une date.</div>
                 </div>
 
-                <!-- ✅ INFOS COMMANDE -->
-                <div class="res-formBlock mt-3">
-                    <h3 class="res-section__title mb-2">Votre commande</h3>
-
-                    <div class="row g-2">
-                    <div class="col-6">
-                        <label class="form-label small mb-1" for="datePrestation">Date</label>
-                        <input class="form-control form-control-sm" type="date" id="datePrestation" required>
-                        <div class="invalid-feedback">Choisis une date.</div>
-                    </div>
-
-                    <div class="col-6">
-                        <label class="form-label small mb-1" for="heurePrestation">Heure</label>
-                        <input class="form-control form-control-sm" type="time" id="heurePrestation" required>
-                        <div class="invalid-feedback">Choisis une heure.</div>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label small mb-1" for="nbPersonnes">Nombre de personnes</label>
-                        <input class="form-control form-control-sm" type="number" id="nbPersonnes" min="1" step="1" required>
-                        <div class="invalid-feedback">Indique le nombre de personnes.</div>
-                    </div>
-                    </div>
+                <div class="col-6">
+                  <label class="form-label small mb-1" for="heurePrestation">Heure</label>
+                  <input class="form-control form-control-sm" type="time" id="heurePrestation" required>
+                  <div class="invalid-feedback">Choisis une heure.</div>
                 </div>
+
+                <div class="col-12">
+                  <label class="form-label small mb-1" for="nbPersonnes">Nombre de personnes</label>
+                  <input class="form-control form-control-sm" type="number" id="nbPersonnes" min="1" step="1" required>
+                  <div class="invalid-feedback">Indique le nombre de personnes.</div>
+                </div>
+              </div>
+            </div>
             <!-- ✅ Conditions + formulaire (style maquette) -->
             <div class="card shadow-sm border-0 mt-3 res-card">
             <div class="card-body p-3 res-reservation">
@@ -118,6 +124,7 @@
                 <div class="res-section">
                 <h3 class="res-section__title">Conditions de réservation :</h3>
                 <ul class="res-section__list" id="res-conditions-reservation">
+                    <li>Pensez à bien verifier que l'adresse de livraison est la bonne.</li>
                     <li>Pensez à réserver ce menu au minimum 24h à l’avance.</li>
                     <li>Aucun retour de matériel prévu sur ce menu.</li>
                     <li>Vérifier les risques d’allergies avant toute commande.</li>
