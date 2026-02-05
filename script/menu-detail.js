@@ -30,7 +30,7 @@ async function initMenuDetail() {
   let menu;
   try {
     const res = await fetch(`${apiUrl}menu/${encodeURIComponent(menuId)}`, {
-      headers: { "Accept": "application/json" },
+      headers: { Accept: "application/json" },
     });
 
     if (!res.ok) {
@@ -86,12 +86,10 @@ function renderMenuCard(menu) {
 
   // si theme/regime sont IDs -> fallback
   const themeLabel =
-    menu.theme?.libelle ??
-    (menu.theme ? `Thème #${menu.theme}` : "Thème ?");
+    menu.theme?.libelle ?? (menu.theme ? `Thème #${menu.theme}` : "Thème ?");
 
   const regimeLabel =
-    menu.regime?.libelle ??
-    (menu.regime ? `Régime #${menu.regime}` : "?");
+    menu.regime?.libelle ?? (menu.regime ? `Régime #${menu.regime}` : "?");
 
   clone.querySelector(".veg-menu__subtitle").textContent = themeLabel;
   clone.querySelector(".veg-regime").textContent = regimeLabel;
@@ -101,11 +99,13 @@ function renderMenuCard(menu) {
   clone.querySelector(".veg-prix").textContent =
     `${formatEuro(menu.prix_par_personne)} / pers`;
 
-  // image placeholder (tu brancheras ton champ image plus tard)
-  const img = clone.querySelector(".veg-menu__photo");
-  if (img) {
-    img.src = "../images/placeholder.jpg";
-    img.alt = menu.titre ?? "Menu";
+  // ✅ Carrousel: photos des plats (plat.photo)
+  const plats = Array.isArray(menu.plats) ? menu.plats : [];
+
+  // On cible l'élément racine de la card clonée
+  const rootEl = clone.querySelector(".veg-menu") ?? clone.querySelector(".veg-menu-card");
+  if (rootEl) {
+    fillMenuCarousel(rootEl, menu, plats);
   }
 
   return clone;
@@ -116,18 +116,17 @@ function fillExtras(menu) {
   const stockEl = document.getElementById("res-stock");
   if (stockEl) stockEl.textContent = `${menu.quantite_restaurant ?? 0} menus`;
 
-  // Plats (si ton API les renvoie plus tard sous menu.plats)
+  // Plats
   const plats = Array.isArray(menu.plats) ? menu.plats : [];
 
-  const entrees = plats.filter(p => normalizeCat(p.categorie) === "entree");
-  const platsPrincipaux = plats.filter(p => normalizeCat(p.categorie) === "plat");
-  const desserts = plats.filter(p => normalizeCat(p.categorie) === "dessert");
+  const entrees = plats.filter((p) => normalizeCat(p.categorie) === "entree");
+  const platsPrincipaux = plats.filter((p) => normalizeCat(p.categorie) === "plat");
+  const desserts = plats.filter((p) => normalizeCat(p.categorie) === "dessert");
 
   fillUl("res-entrees", entrees, "Aucune entrée");
   fillUl("res-plats", platsPrincipaux, "Aucun plat");
   fillUl("res-desserts", desserts, "Aucun dessert");
 
-  // Liens allergènes (placeholder)
   bindAllergenLink("res-all-entrees", entrees);
   bindAllergenLink("res-all-plats", platsPrincipaux);
   bindAllergenLink("res-all-desserts", desserts);
@@ -140,18 +139,14 @@ function setupOrderForm(menu) {
   const checkbox = document.getElementById("conditions");
   const btn = document.getElementById("btn-commandez");
 
-  const dateEl = document.getElementById("datePrestation");
-  const timeEl = document.getElementById("heurePrestation");
   const nbEl = document.getElementById("nbPersonnes");
 
-  // si tu as ajouté ces champs, on peut préremplir nb mini
   if (nbEl) {
     const min = menu.nb_personne_mini ?? 1;
     nbEl.min = String(min);
     if (!nbEl.value) nbEl.value = String(min);
   }
 
-  // bouton disabled tant que conditions pas cochées
   const syncBtn = () => {
     if (!btn || !checkbox) return;
     btn.disabled = !checkbox.checked;
@@ -162,7 +157,6 @@ function setupOrderForm(menu) {
   form.onsubmit = async (e) => {
     e.preventDefault();
 
-    // Guard connecté
     if (!isConnected()) {
       alert("Pour commander, veuillez vous connecter.");
       const current = window.location.pathname + window.location.search;
@@ -170,22 +164,18 @@ function setupOrderForm(menu) {
       return;
     }
 
-    // Validation HTML5
     form.classList.add("was-validated");
     if (!form.checkValidity()) return;
-
     if (!checkbox?.checked) return;
 
-    // Payload minimal
     const payload = {
-        menu_id: menu.id,
-        adresse_prestation: document.getElementById("clientAdresseLivraison").value,
-        nb_personne: Number(document.getElementById("nbPersonnes").value),
-        date_prestation: document.getElementById("datePrestation").value,   // "YYYY-MM-DD"
-        heure_prestation: document.getElementById("heurePrestation").value, // "HH:mm"
+      menu_id: menu.id,
+      adresse_prestation: document.getElementById("clientAdresseLivraison").value,
+      nb_personne: Number(document.getElementById("nbPersonnes").value),
+      date_prestation: document.getElementById("datePrestation").value,
+      heure_prestation: document.getElementById("heurePrestation").value,
     };
 
-    // UX bouton
     if (btn) {
       btn.disabled = true;
       btn.textContent = "ENVOI…";
@@ -197,7 +187,7 @@ function setupOrderForm(menu) {
       const res = await fetch(`${apiUrl}commande`, {
         method: "POST",
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           "X-AUTH-TOKEN": token,
         },
@@ -214,8 +204,6 @@ function setupOrderForm(menu) {
       }
 
       alert("Commande enregistrée ✅");
-      // Option: redirection
-      // window.location.href = "/mes-commandes";
     } catch (err) {
       console.error(err);
       alert("Impossible d’envoyer la commande (réseau/API).");
@@ -228,35 +216,124 @@ function setupOrderForm(menu) {
   };
 }
 
-async function fetchCurrentUser() {
-  const token = getToken();
+/* ---------------- CARROUSEL ---------------- */
 
-  const res = await fetch(`${apiUrl}account/me`, {
-    headers: {
-      "Accept": "application/json",
-      "X-AUTH-TOKEN": token,
-    },
-  });
+function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
+  const v = (photoValue ?? "").trim();
+  if (!v) return fallback;
 
-  if (!res.ok) return null;
-  return res.json();
+  if (v.startsWith("http://") || v.startsWith("https://")) return v;
+  if (v.startsWith("/images/")) return v;
+  if (v.startsWith("images/")) return `/${v}`;
+  if (v.startsWith("/")) return v;
+
+  return `/images/${v}`;
 }
 
-function fillClientForm(user) {
-  if (!user) return;
+function getPlatLabel(p) {
+  return p?.titre ?? p?.nom ?? p?.libelle ?? p?.name ?? "Plat";
+}
 
-  // adapte les champs selon ton JSON user
-  document.getElementById("clientNom").value = user.nom ?? "";
-  document.getElementById("clientPrenom").value = user.prenom ?? "";
-  document.getElementById("clientAdresse").value = user.adresse ?? "";
-  document.getElementById("clientTelephone").value = user.telephone ?? "";
+function fillMenuCarousel(rootEl, menu, plats) {
+  const carousel = rootEl.querySelector(".veg-carousel");
+  if (!carousel) {
+    // Si tu n'as pas encore modifié le template HTML, on évite de crash
+    const img = rootEl.querySelector(".veg-menu__photo");
+    if (img) {
+      img.src = "/images/placeholder.jpg";
+      img.alt = menu?.titre ?? "Menu";
+    }
+    return;
+  }
+
+  const inner = carousel.querySelector(".veg-carousel__inner");
+  const indicators = carousel.querySelector(".veg-carousel__indicators");
+  const prevBtn = carousel.querySelector(".carousel-control-prev");
+  const nextBtn = carousel.querySelector(".carousel-control-next");
+
+  if (!inner || !indicators) return;
+
+  const items = (plats ?? []).filter((p) => p?.photo);
+
+  const carouselId = `menuDetailCarousel-${menu?.id ?? Math.random().toString(36).slice(2)}`;
+  carousel.id = carouselId;
+
+  if (prevBtn) prevBtn.setAttribute("data-bs-target", `#${carouselId}`);
+  if (nextBtn) nextBtn.setAttribute("data-bs-target", `#${carouselId}`);
+
+  if (items.length === 0) {
+    indicators.innerHTML = "";
+    inner.innerHTML = `
+      <div class="carousel-item active">
+        <img class="d-block w-100 veg-menu__photo" src="/images/placeholder.jpg" alt="Menu">
+      </div>
+    `;
+    if (prevBtn) prevBtn.classList.add("d-none");
+    if (nextBtn) nextBtn.classList.add("d-none");
+    return;
+  }
+
+  // ✅ Slide actif par défaut: le PLAT
+  const activeIndex = Math.max(
+    items.findIndex((p) => normalizeCat(p.categorie) === "plat"),
+    0
+  );
+
+  const showNav = items.length >= 2;
+
+  indicators.innerHTML = showNav
+    ? items
+        .map(
+          (_, i) => `
+          <button type="button"
+            data-bs-target="#${carouselId}"
+            data-bs-slide-to="${i}"
+            class="${i === activeIndex ? "active" : ""}"
+            aria-current="${i === activeIndex ? "true" : "false"}"
+            aria-label="Slide ${i + 1}">
+          </button>
+        `
+        )
+        .join("")
+    : "";
+
+  inner.innerHTML = items
+    .map((p, i) => {
+      const label = getPlatLabel(p);
+      const src = resolvePhotoSrc(p.photo);
+
+      return `
+        <div class="carousel-item ${i === activeIndex ? "active" : ""}">
+          <img
+            class="d-block w-100 veg-menu__photo"
+            src="${src}"
+            alt="${escapeHtml(label)}"
+            onerror="this.onerror=null;this.src='/images/placeholder.jpg';"
+          />
+          <div class="carousel-caption d-block">
+            <div class="px-2 py-1 rounded"
+                 style="background: rgba(0,0,0,.45); display:inline-block;">
+              ${escapeHtml(label)}
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  if (prevBtn) prevBtn.classList.toggle("d-none", !showNav);
+  if (nextBtn) nextBtn.classList.toggle("d-none", !showNav);
 }
 
 /* ---------------- utilitaires ---------------- */
 
 function safeJson(txt) {
   if (!txt) return null;
-  try { return JSON.parse(txt); } catch { return null; }
+  try {
+    return JSON.parse(txt);
+  } catch {
+    return null;
+  }
 }
 
 function formatEuro(value) {
@@ -293,7 +370,7 @@ function fillUl(id, items, emptyLabel) {
   }
 
   ul.innerHTML = items
-    .map((p) => `<li>${escapeHtml(p.titre ?? p ?? "")}</li>`)
+    .map((p) => `<li>${escapeHtml(getPlatLabel(p))}</li>`)
     .join("");
 }
 
@@ -307,7 +384,6 @@ function bindAllergenLink(linkId, plats) {
   a.addEventListener("click", (e) => {
     e.preventDefault();
 
-    // Placeholder: si tu as p.allergenes plus tard
     const alls = [];
     plats.forEach((p) => {
       const list = Array.isArray(p.allergenes) ? p.allergenes : [];

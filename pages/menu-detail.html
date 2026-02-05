@@ -186,7 +186,25 @@
 
             <div class="veg-menu__media position-relative mx-3">
               <div class="veg-menu__img">
-                <img class="veg-menu__photo" src="../images/placeholder.jpg">
+                <div class="carousel slide veg-carousel" data-bs-ride="carousel">
+                  <div class="carousel-indicators veg-carousel__indicators"></div>
+
+                  <div class="carousel-inner veg-carousel__inner">
+                    <div class="carousel-item active">
+                      <img class="d-block w-100 veg-menu__photo" src="/images/placeholder.jpg" alt="Menu">
+                    </div>
+                  </div>
+
+                  <button class="carousel-control-prev" type="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Précédent</span>
+                  </button>
+
+                  <button class="carousel-control-next" type="button" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Suivant</span>
+                  </button>
+                </div>
               </div>
               <div class="veg-menu__label"></div>
             </div>
