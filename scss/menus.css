@@ -127,12 +127,13 @@
 .veg-menu__media {
   border-radius: 1.25rem;
   border: 3px solid rgba(50, 60, 55, 0.35);
+  margin: 0 1rem;
 }
 
 .veg-menu__img {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 260px;
   overflow: hidden;
   border-radius: 16px;
 }
@@ -154,6 +155,27 @@
   -o-object-position: center;
      object-position: center;
   display: block;
+}
+
+.veg-carousel,
+.veg-carousel .carousel-inner,
+.veg-carousel .carousel-item {
+  width: 100%;
+  height: 100%;
+}
+
+.veg-carousel,
+.veg-menu__photo {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+
+.veg-carousel .carousel-item {
+  margin: 0;
+  padding: 0;
 }
 
 /* Flèches */

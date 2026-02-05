@@ -1,11 +1,10 @@
 // ../script/menu.js
-// Requiert: apiUrl (dans ton script global). route(event) optionnel si tu utilises ton SPA.
 
 function escapeHtml(str = "") {
   return String(str)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
+    .replaceAll(">", "&lt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
@@ -34,7 +33,7 @@ function fillUlNode(ul, items, emptyLabel) {
   }
 
   ul.innerHTML = items
-    .map((p) => `<li>${escapeHtml(p.titre ?? p.nom ?? String(p))}</li>`)
+    .map((p) => `<li>${escapeHtml(p.titre ?? p.nom ?? p.libelle ?? String(p))}</li>`)
     .join("");
 }
 
@@ -44,12 +43,122 @@ function extractAllergens(plats) {
   plats.forEach((p) => {
     const list = Array.isArray(p.allergenes) ? p.allergenes : [];
     list.forEach((al) => {
-      const label = al?.libelle ?? al?.nom ?? al?.name ?? (typeof al === "string" ? al : "");
+      const label =
+        al?.libelle ??
+        al?.nom ??
+        al?.name ??
+        (typeof al === "string" ? al : "");
       if (label) set.add(label);
     });
   });
 
   return [...set];
+}
+
+// ✅ ton champ s'appelle "photo"
+function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
+  const v = (photoValue ?? "").trim();
+  if (!v) return fallback;
+
+  if (v.startsWith("http://") || v.startsWith("https://")) return v;
+
+  if (v.startsWith("/images/")) return v;
+  if (v.startsWith("images/")) return `/${v}`;
+  if (v.startsWith("/")) return v;
+
+  return `/images/${v}`;
+}
+
+function getPlatLabel(p) {
+  // ton API semble renvoyer titre (nom undefined)
+  return p?.titre ?? p?.nom ?? p?.libelle ?? p?.name ?? "Plat";
+}
+
+/**
+ * Remplit le carrousel présent dans le template.
+ * - un slide par plat (plat.photo)
+ * - ajoute un ID unique + data-bs-target sur boutons/indicators
+ */
+function fillMenuCarousel(clone, menu, plats) {
+  const carousel = clone.querySelector(".veg-carousel");
+  if (!carousel) return;
+
+  const inner = carousel.querySelector(".veg-carousel__inner");
+  const indicators = carousel.querySelector(".veg-carousel__indicators");
+  const prevBtn = carousel.querySelector(".carousel-control-prev");
+  const nextBtn = carousel.querySelector(".carousel-control-next");
+
+  if (!inner || !indicators) return;
+
+  // plats avec photo
+  const items = (plats ?? []).filter((p) => p?.photo);
+  const activeIndex = Math.max(
+    items.findIndex((p) => normalizeCat(p.categorie) === "plat"),
+    0
+  );
+
+  // ID unique pour Bootstrap
+  const carouselId = `menuCarousel-${menu?.id ?? Math.random().toString(36).slice(2)}`;
+  carousel.id = carouselId;
+
+  // relier boutons au carrousel
+  if (prevBtn) prevBtn.setAttribute("data-bs-target", `#${carouselId}`);
+  if (nextBtn) nextBtn.setAttribute("data-bs-target", `#${carouselId}`);
+
+  // si pas de photos => on garde le fallback placeholder (déjà dans le HTML)
+  if (items.length === 0) {
+    indicators.innerHTML = "";
+    // cacher les controls si 0/1 slide
+    if (prevBtn) prevBtn.classList.add("d-none");
+    if (nextBtn) nextBtn.classList.add("d-none");
+    return;
+  }
+
+  // si 1 seule photo: pas besoin d'indicators + controls
+  const showNav = items.length >= 2;
+
+  indicators.innerHTML = showNav
+    ? items
+        .map(
+          (_, i) => `
+          <button type="button"
+            data-bs-target="#${carouselId}"
+            data-bs-slide-to="${i}"
+            class="${i === 0 ? "active" : ""}"
+            aria-current="${i === 0 ? "true" : "false"}"
+            aria-label="Slide ${i + 1}">
+          </button>
+        `
+        )
+        .join("")
+    : "";
+
+  inner.innerHTML = items
+    .map((p, i) => {
+      const label = getPlatLabel(p);
+      const src = resolvePhotoSrc(p.photo);
+
+      return `
+        <div class="carousel-item ${i === activeIndex ? "active" : ""}">
+          <img
+            class="d-block w-100 veg-menu__photo"
+            src="${src}"
+            alt="${escapeHtml(label)}"
+            onerror="this.onerror=null;this.src='/images/placeholder.jpg';"
+          />
+          <div class="carousel-caption d-block">
+            <div class="px-2 py-1 rounded"
+                 style="background: rgba(0,0,0,.45); display:inline-block;">
+              ${escapeHtml(label)}
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  if (prevBtn) prevBtn.classList.toggle("d-none", !showNav);
+  if (nextBtn) nextBtn.classList.toggle("d-none", !showNav);
 }
 
 function renderMenu(menu) {
@@ -67,15 +176,23 @@ function renderMenu(menu) {
 
   clone.querySelector(".menu-stock").textContent = `${menu.quantite_restaurant ?? 0} menus`;
 
+  // ✅ plats
+  const plats = Array.isArray(menu.plats) ? menu.plats : [];
+
+  // ✅ Carrousel (plat.photo + titre)
+  fillMenuCarousel(clone, menu, plats);
+
+  const entrees = plats.filter((p) => normalizeCat(p.categorie) === "entree");
+  const platsPrincipaux = plats.filter((p) => normalizeCat(p.categorie) === "plat");
+  const desserts = plats.filter((p) => normalizeCat(p.categorie) === "dessert");
+
   // ✅ lien menu-detail (public)
   const link = clone.querySelector(".menu-link");
   if (link) {
     link.href = `/menu-detail?id=${encodeURIComponent(menu.id)}`;
+    link.textContent = "Réserver ce menu";
 
-    link.textContent = "Réserver ce menu"; // (recommandé)
-    
     link.addEventListener("click", (e) => {
-      // ✅ Guard: pas connecté => signin + redirect
       if (!isConnected()) {
         e.preventDefault();
         alert("Pour réserver, veuillez vous connecter.");
@@ -83,23 +200,9 @@ function renderMenu(menu) {
         window.location.href = `/signin?redirect=${encodeURIComponent(target)}`;
         return;
       }
-
-      // ✅ connecté => navigation SPA normale
       if (typeof route === "function") route(e);
     });
   }
-
-  // ✅ plats
-  const plats = Array.isArray(menu.plats) ? menu.plats : [];
-
-  const entrees = plats.filter((p) => normalizeCat(p.categorie) === "entree");
-  const platsPrincipaux = plats.filter((p) => normalizeCat(p.categorie) === "plat");
-  const desserts = plats.filter((p) => normalizeCat(p.categorie) === "dessert");
-
-  // aperçu dans la card
-  fillUlNode(clone.querySelector(".menu-entrees"), entrees, "Aucune entrée");
-  fillUlNode(clone.querySelector(".menu-plats"), platsPrincipaux, "Aucun plat");
-  fillUlNode(clone.querySelector(".menu-desserts"), desserts, "Aucun dessert");
 
   // ✅ détails (wrapper)
   const detailsWrap = clone.querySelector(".menu-details-wrapper");
@@ -112,12 +215,10 @@ function renderMenu(menu) {
       btnDetails.textContent = open ? "Masquer les détails" : "Voir les détails";
     });
 
-    // listes détails
     fillUlNode(clone.querySelector(".menu-details-entrees"), entrees, "Aucune entrée");
     fillUlNode(clone.querySelector(".menu-details-plats"), platsPrincipaux, "Aucun plat");
     fillUlNode(clone.querySelector(".menu-details-desserts"), desserts, "Aucun dessert");
 
-    // allergènes via tes liens .menu-allergen-link (data-type)
     clone.querySelectorAll(".menu-allergen-link").forEach((a) => {
       a.addEventListener("click", (e) => {
         e.preventDefault();
@@ -139,7 +240,6 @@ function renderMenu(menu) {
       });
     });
 
-    // ✅ conditions (API si dispo, sinon fallback)
     const defaultRes = [
       "Pensez à réserver ce menu au minimum 48h à l’avance.",
       "Aucun retour de matériel prévu sur ce menu.",

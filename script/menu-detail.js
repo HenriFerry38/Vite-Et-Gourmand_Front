@@ -176,7 +176,7 @@ function setupOrderForm(menu) {
 
     if (!checkbox?.checked) return;
 
-    // Payload minimal (adapte selon ton backend si besoin)
+    // Payload minimal
     const payload = {
         menu_id: menu.id,
         adresse_prestation: document.getElementById("clientAdresseLivraison").value,
