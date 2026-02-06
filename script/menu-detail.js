@@ -133,6 +133,11 @@ function fillExtras(menu) {
 }
 
 function setupOrderForm(menu) {
+
+  if (isConnected()) {
+    fillClientInfos();
+  }
+
   const form = document.getElementById("reservation-form");
   if (!form) return;
 
@@ -214,6 +219,39 @@ function setupOrderForm(menu) {
       }
     }
   };
+}
+
+async function fillClientInfos() {
+  try {
+    const token = getToken();
+
+    const res = await fetch(`${apiUrl}account/me`, {
+      headers: {
+        Accept: "application/json",
+        "X-AUTH-TOKEN": token,
+      },
+    });
+
+    if (!res.ok) return;
+
+    const user = await res.json();
+
+    const setIfEmpty = (id, value) => {
+      const input = document.getElementById(id);
+      if (input && !input.value) {
+        input.value = value ?? "";
+      }
+    };
+
+    setIfEmpty("clientNom", user.nom);
+    setIfEmpty("clientPrenom", user.prenom);
+    setIfEmpty("clientMail", user.email);
+    setIfEmpty("clientAdresseLivraison", user.adresse);
+    setIfEmpty("clientTelephone", user.telephone);
+
+  } catch (e) {
+    console.error("Erreur récupération user:", e);
+  }
 }
 
 /* ---------------- CARROUSEL ---------------- */
