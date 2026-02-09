@@ -78,10 +78,16 @@ const LoadContentPage = async () => {
 
     // Ajout du JS de page
     if (actualRoute.pathJS != "") {
-      const scriptTag = document.createElement("script");
-      scriptTag.setAttribute("type", "text/javascript");
-      scriptTag.setAttribute("src", actualRoute.pathJS);
-      document.body.appendChild(scriptTag);
+      try {
+        const mod = await import(actualRoute.pathJS);
+
+        // Si le module expose une init(), on l'appelle (propre)
+        if (mod && typeof mod.init === "function") {
+          await mod.init();
+        }
+      } catch (e) {
+        console.error("Erreur chargement module JS:", actualRoute.pathJS, e);
+      }
     }
 
     document.title = actualRoute.title + " - " + websiteName;
@@ -110,7 +116,8 @@ const routeEvent = (event) => {
   event = event || window.event;
   event.preventDefault();
   // Mise à jour de l'URL dans l'historique du navigateur
-  window.history.pushState({}, "", event.target.href);
+  const href = event.currentTarget.getAttribute("href");
+  window.history.pushState({}, "", href);
   // Chargement du contenu de la nouvelle page
   LoadContentPage();
 };

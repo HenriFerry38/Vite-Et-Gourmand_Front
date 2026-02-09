@@ -20,19 +20,15 @@
             <div class="text-center p-3">
                 <h1>Êtes vous sûr de vouloir continuer ?</h1>
             </div>
-            <div class="text-center p-3">
-                <a href="#">
-                    <span>12/05/2023</span> | 
-                    <span>12:10</span> | 
-                    <span>5 personnes</span> | 
-                    <span>Pas d’allergie</span> 
-                    <span>Statut : En attente</span>
-                </a>
+            <div class="text-center p-3" id="commande-summary">
             </div>
             <div class="text-center p-3">
                 <a href="/editCommande" type="button" class="btn btn-secondary">Annuler la suppression</a>
-                <button type="button" class="btn btn-danger">Supprimer la commande</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer la commande</button>
             </div>
+            <div id="deleteCommande-alert" class="alert mt-3" style="display:none;"></div>
         </div>
     </main>
+    
+    <script src="/script/auth/deleteCommande.js"></script>
 </body>

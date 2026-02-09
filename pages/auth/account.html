@@ -21,7 +21,8 @@
     <div class="container">
         <div class="modif-info p-2">
             <h2>Modifier vos informations</h2>
-            <form>
+            <div id="account-alert" class="alert mt-3 fade" style="display:none;"></div>
+            <form id="account-form">
                 <div class="mb-3">
                     <label for="NomInput" class="form-label">Nom</label>
                     <input type="text" class="form-control" id="NomInput" placeholder="Votre nom" name="Nom"> 
@@ -55,7 +56,7 @@
                         <button type="submit" class="btn btn-primary">Modifier vos informations</button>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-danger">Supprimer mon compte</button>
+                        <button id="btn-delete-account" type="button" class="btn btn-danger">Supprimer mon compte</button>
                     </div>
                 </div>
             </form>
@@ -65,3 +66,5 @@
         </div>
     </div>
 </main>
+
+<script src="../script/auth/account.js"></script>

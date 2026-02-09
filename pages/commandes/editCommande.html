@@ -18,12 +18,15 @@
         </section>
         <div class="container">
             <h2>Menu</h2>
-            <div>
-                <p>Le menu selectionné pour cette commande et ses informations</p>
+            <div id="menu-info">
             </div>
         </div>
         <div class="container">
-            <form>
+            <form id="editCommande-form">
+                <div class="mb-3">
+                    <label for="NbPersonneInput" class="form-label">Adresse de livraison</label>
+                    <input type="text" class="form-control" id="AdresseInput" name="Adresse"> 
+                </div>
                 <div class="mb-3">
                     <label for="NbPersonneInput" class="form-label">Nombres de personne</label>
                     <input type="number" class="form-control" id="NbPersonneInput" name="NbPersonnes"> 
@@ -52,13 +55,16 @@
                 </div>
                 <div class="text-center p-3">
                     <button type="submit" class="btn btn-primary">Modifier la commande</button>
-                    <a href="/deleteCommande" type="button" class="btn btn-danger">Annuler la commande</a>
+                    <a href="/deleteCommande" id="deleteCommandeLink" type="button" class="btn btn-danger">Annuler la commande</a>
                 </div>
             </form>
+            <div id="editCommande-alert" class="alert mt-3" style="display:none;"></div>
         </div>
         <div class="text-center">
             <a href="/historiqueCommande">Retournez a vos commandes</a>
         </div>
     </main>
+
     <script src="/script/commandeHoraire.js"></script>
+    <script src="/script/auth/editCommande.js"></script>
 </body>
