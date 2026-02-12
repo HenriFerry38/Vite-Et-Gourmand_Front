@@ -1,10 +1,11 @@
 import Route from "./route.js";
 import { allRoutes, websiteName } from "./allRoutes.js";
 
-// Création d'une route pour la page 404 (page introuvable)
+// Route 404
 const route404 = new Route("404", "Page introuvable", "/pages/404.html", []);
 
-// --- LOADER ---
+/* ---------------- LOADER ---------------- */
+
 const showLoader = () => {
   const loader = document.getElementById("app-loader");
   if (loader) loader.classList.remove("is-hidden");
@@ -15,24 +16,54 @@ const hideLoader = () => {
   if (loader) loader.classList.add("is-hidden");
 };
 
-// Fonction pour récupérer la route correspondant à une URL donnée
-const getRouteByUrl = (url) => {
-  let currentRoute = null;
-  // Parcours de toutes les routes pour trouver la correspondance
-  allRoutes.forEach((element) => {
-    if (element.url == url) {
-      currentRoute = element;
-    }
-  });
-  // Si aucune correspondance n'est trouvée, on retourne la route 404
-  if (currentRoute != null) {
-    return currentRoute;
-  } else {
-    return route404;
-  }
-};
+/* ---------------- ROUTES ---------------- */
 
-// Fonction pour charger le contenu de la page
+const getRouteByUrl = (url) => allRoutes.find((r) => r.url === url) ?? route404;
+
+/* ---------------- AUTH HELPERS ---------------- */
+
+// Récupère les rôles depuis /api/account/me (source de vérité)
+async function fetchRolesFromMe() {
+  if (typeof isConnected !== "function" || !isConnected()) return [];
+
+  try {
+    const res = await fetch(`${apiUrl}account/me`, {
+      headers: {
+        Accept: "application/json",
+        "X-AUTH-TOKEN": getToken(),
+      },
+    });
+
+    if (!res.ok) return [];
+
+    const me = await res.json();
+    return Array.isArray(me.roles) ? me.roles : [];
+  } catch (e) {
+    console.error("fetchRolesFromMe error:", e);
+    return [];
+  }
+}
+
+// Autorisation d'accès à une route
+async function isAuthorized(authorizeList) {
+  // Route publique
+  if (!Array.isArray(authorizeList) || authorizeList.length === 0) return true;
+
+  // Route réservée aux visiteurs non connectés
+  if (authorizeList.includes("disconnected")) {
+    return typeof isConnected === "function" ? !isConnected() : true;
+  }
+
+  // Route protégée -> doit être connecté
+  if (typeof isConnected !== "function" || !isConnected()) return false;
+
+  // Si authorize contient des rôles (ROLE_*)
+  const roles = await fetchRolesFromMe();
+  return roles.some((r) => authorizeList.includes(r));
+}
+
+/* ---------------- LOAD PAGE ---------------- */
+
 const LoadContentPage = async () => {
   showLoader();
 
@@ -40,48 +71,35 @@ const LoadContentPage = async () => {
     const path = window.location.pathname;
     const actualRoute = getRouteByUrl(path);
 
-    // Vérifications des droits d'accès à la page
-    const allRolesArray = actualRoute.authorize;
-
-    if (allRolesArray.length > 0) {
-      if (allRolesArray.includes("disconnected")) {
-        if (isConnected()) {
-          hideLoader(); 
-          window.location.replace("/");
-          return;
-        }
-      } else {
-        const roleUser = getRole();
-        if (!allRolesArray.includes(roleUser)) {
-          hideLoader(); 
-          window.location.replace("/");
-          return;
-        }
-      }
+    // Guard accès
+    const ok = await isAuthorized(actualRoute.authorize);
+    if (!ok) {
+      window.location.replace("/");
+      return;
     }
 
+    // Charger HTML
     const response = await fetch(actualRoute.pathHtml);
+    const main = document.getElementById("main-page");
+    if (!main) return;
 
-    // Si le fichier HTML n'existe pas / erreur serveur → 404
     if (!response.ok) {
       const fallback = await fetch(route404.pathHtml);
-      document.getElementById("main-page").innerHTML = await fallback.text();
+      main.innerHTML = await fallback.text();
     } else {
-      const html = await response.text();
-      document.getElementById("main-page").innerHTML = html;
+      main.innerHTML = await response.text();
     }
-    //Insertion du script horaire pour la modification de commande
+
+    // Script spécifique (editCommande)
     if (window.location.pathname === "/editCommande") {
       const mod = await import("/script/commandeHoraire.js");
-      mod.initCommandeHoraire();
+      if (mod?.initCommandeHoraire) mod.initCommandeHoraire();
     }
 
-    // Ajout du JS de page
-    if (actualRoute.pathJS != "") {
+    // JS de page
+    if (actualRoute.pathJS) {
       try {
         const mod = await import(actualRoute.pathJS);
-
-        // Si le module expose une init(), on l'appelle (propre)
         if (mod && typeof mod.init === "function") {
           await mod.init();
         }
@@ -90,43 +108,47 @@ const LoadContentPage = async () => {
       }
     }
 
-    document.title = actualRoute.title + " - " + websiteName;
+    // Title
+    document.title = `${actualRoute.title} - ${websiteName}`;
 
-    // Afficher / masquer éléments selon les rôles
-    await Promise.resolve(showAndHideElementsForRoles());
-
+    // Afficher/masquer UI selon connexion + refresh lien employé
+    // (showAndHideElementsForRoles gère surtout connected/disconnected chez toi)
+    try {
+      if (typeof showAndHideElementsForRoles === "function") {
+        await Promise.resolve(showAndHideElementsForRoles());
+      }
+      if (typeof refreshNavByRoles === "function") {
+        await Promise.resolve(refreshNavByRoles());
+      }
+    } catch (e) {
+      console.error("UI role/nav refresh error:", e);
+    }
   } catch (error) {
     console.error("Erreur lors du chargement de la page :", error);
 
-    // afficher la 404 si crash
+    // fallback 404
     try {
+      const main = document.getElementById("main-page");
+      if (!main) return;
       const fallback = await fetch(route404.pathHtml);
-      document.getElementById("main-page").innerHTML = await fallback.text();
-    } catch (e) {
-      // si même la 404 échoue, au moins on évite de bloquer
-    }
+      main.innerHTML = await fallback.text();
+    } catch {}
   } finally {
-    // on enlève le loader
     hideLoader();
   }
 };
 
-// Fonction pour gérer les événements de routage (clic sur les liens)
+/* ---------------- NAV EVENTS ---------------- */
+
 const routeEvent = (event) => {
   event = event || window.event;
   event.preventDefault();
-  // Mise à jour de l'URL dans l'historique du navigateur
+
   const href = event.currentTarget.getAttribute("href");
   window.history.pushState({}, "", href);
-  // Chargement du contenu de la nouvelle page
   LoadContentPage();
 };
 
-// Gestion de l'événement de retour en arrière dans l'historique du navigateur
 window.onpopstate = LoadContentPage;
-// Assignation de la fonction routeEvent à la propriété route de la fenêtre
 window.route = routeEvent;
-// Chargement du contenu de la page au chargement initial
 LoadContentPage();
-
-

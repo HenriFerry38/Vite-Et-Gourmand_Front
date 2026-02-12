@@ -83,7 +83,16 @@ function renderMenuCard(menu) {
   // champs principaux
   clone.querySelector(".veg-menu__title").textContent = menu.titre ?? "Menu";
   clone.querySelector(".veg-menu__desc").textContent = menu.description ?? "";
-
+  const materielEl = clone.querySelector(".veg-menu__materiel");
+  if (materielEl) {
+    const hasPret = Boolean(menu.pret_materiel);
+    if (hasPret) {
+      materielEl.classList.remove("d-none");
+      materielEl.innerHTML = `<span class="badge rounded-pill text-bg-warning">🎒 Prêt de matériel inclus</span>`;
+    } else {
+      materielEl.classList.add("d-none");
+    }
+  }
   // si theme/regime sont IDs -> fallback
   const themeLabel =
     menu.theme?.libelle ?? (menu.theme ? `Thème #${menu.theme}` : "Thème ?");
@@ -115,6 +124,26 @@ function fillExtras(menu) {
   // Stock
   const stockEl = document.getElementById("res-stock");
   if (stockEl) stockEl.textContent = `${menu.quantite_restaurant ?? 0} menus`;
+
+  const alertBox = document.getElementById("pret-materiel-alert");
+  if (alertBox) {
+    const hasPret = Boolean(menu.pret_materiel);
+
+    if (hasPret) {
+      alertBox.classList.remove("d-none");
+      alertBox.innerHTML = `
+        <div class="alert alert-warning mt-2 mb-3" role="alert">
+          <strong>Restitution du matériel :</strong>
+          Le matériel mis à disposition dans le cadre de la prestation demeure la propriété de Vite & Gourmand.\n\
+          Il devra être restitué en bon état dans un délai de <strong>10 jours ouvrés suivant la date de prestation.</strong>\n\
+          À défaut de restitution dans ce délai, une indemnité forfaitaire de <strong>600€</strong> sera appliquée au client."
+        </div>
+      `;
+    } else {
+      alertBox.classList.add("d-none");
+      alertBox.innerHTML = "";
+    }
+  }
 
   // Plats
   const plats = Array.isArray(menu.plats) ? menu.plats : [];

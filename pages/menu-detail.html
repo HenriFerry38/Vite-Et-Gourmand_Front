@@ -123,10 +123,10 @@
 
                 <div class="res-section">
                 <h3 class="res-section__title">Conditions de réservation :</h3>
+                <div id="pret-materiel-alert" class="d-none"></div>
                 <ul class="res-section__list" id="res-conditions-reservation">
-                    <li>Pensez à bien verifier que l'adresse de livraison est la bonne.</li>
-                    <li>Pensez à réserver ce menu au minimum 24h à l’avance.</li>
-                    <li>Aucun retour de matériel prévu sur ce menu.</li>
+                    <li>Pensez a verifier si l'adresse de livraison diffère de la votre.</li>
+                    <li>Pensez à réserver ce menu au minimum 48h à l’avance.</li>
                     <li>Vérifier les risques d’allergies avant toute commande.</li>
                 </ul>
                 </div>
@@ -146,13 +146,13 @@
                     </div>
                 </div>
 
-                <form id="reservation-form" novalidate class="mt-2">
+                <div class="mt-2">
                     <div class="res-check">
                         <input class="form-check-input" type="checkbox" id="conditions" required>
                         <label class="form-check-label" for="conditions">
                             J’ai pris connaissance des conditions de réservations et de stockage
                         </label>
-                        <div class="invalid-feedback">Tu dois accepter les conditions.</div>
+                        <div class="invalid-feedback">Vous devez accepter les conditions.</div>
                     </div>
                    
                     <button class="btn res-cta w-100 mt-3" type="submit" id="btn-commandez" disabled>
@@ -179,6 +179,7 @@
                 <div>
                   <h3 class="veg-menu__title mb-1"></h3>
                   <div class="veg-menu__subtitle"></div>
+                  <div class="veg-menu__materiel mt-2 d-none"></div>
                 </div>
                 <p class="veg-menu__desc mb-0"></p>
               </div>

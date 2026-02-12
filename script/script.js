@@ -56,39 +56,46 @@ function isConnected(){
     return true;
 }
 
-function showAndHideElementsForRoles(){
-    const userConnected = isConnected();
-    const role = getRole();
+function showAndHideElementsForRoles() {
+  const userConnected = isConnected();
+  const role = getRole();
 
-    let allElementsToEdit = document.querySelectorAll('[data-show]');
+  document.querySelectorAll("[data-show]").forEach((el) => {
+    const rule = el.dataset.show;
 
-    allElementsToEdit.forEach(element=>{
-        switch(element.dataset.show){
-            case 'disconnected' :
-                if(userConnected){
-                    element.classList.add("d-none");
-                }
-                break;
-            case 'connected' :
-                if(!userConnected){
-                    element.classList.add("d-none");
-                }
-                break;
-            case 'admin' :
-                if(!userConnected || role != "ROLE_ADMIN"){
-                    element.classList.add("d-none");
-                }
-                break;
-            case 'employe' :
-                if(!userConnected || role != "ROLE_EMPLOYE"){
-                    element.classList.add("d-none");
-                }
-                break;
-            case 'utilisateur' :
-                if(!userConnected || role != "ROLE_USER"){
-                    element.classList.add("d-none");
-                }
-                break;
-        }
-    })
+    let hide = false;
+
+    if (rule === "disconnected") hide = userConnected;
+    if (rule === "connected") hide = !userConnected;
+    if (rule === "admin") hide = !userConnected || role !== "ROLE_ADMIN";
+    if (rule === "employee")
+      hide = !userConnected || (role !== "ROLE_EMPLOYEE" && role !== "ROLE_ADMIN");
+    if (rule === "utilisateur") hide = !userConnected || role !== "ROLE_USER";
+
+    el.classList.toggle("d-none", hide);
+  });
+}
+
+async function refreshNavByRoles() {
+  const linkEmployee = document.querySelector('[data-nav="employee"]');
+  if (!linkEmployee) return;
+
+  linkEmployee.classList.add("d-none");
+
+  if (!isConnected()) return;
+
+  try {
+    const res = await fetch(`${apiUrl}account/me`, {
+      headers: { Accept: "application/json", "X-AUTH-TOKEN": getToken() },
+    });
+    if (!res.ok) return;
+
+    const me = await res.json();
+    const roles = me.roles ?? [];
+    const isStaff = roles.includes("ROLE_EMPLOYEE") || roles.includes("ROLE_ADMIN");
+
+    linkEmployee.classList.toggle("d-none", !isStaff);
+  } catch (e) {
+    console.error("refreshNavByRoles error:", e);
+  }
 }

@@ -170,6 +170,21 @@ function renderMenu(menu) {
   clone.querySelector(".veg-menu__subtitle").textContent = menu.theme?.libelle ?? "?";
   clone.querySelector(".veg-menu__desc").textContent = menu.description ?? "";
 
+  const materielEl = clone.querySelector(".veg-menu__materiel");
+  if (materielEl) {
+    const needReturn = Boolean(menu.pret_materiel);
+
+    if (needReturn) {
+      materielEl.classList.remove("d-none");
+      materielEl.innerHTML = `
+        <span class="badge rounded-pill text-bg-warning">
+          🎒 Prêt de matériel inclus
+        </span>
+      `;
+    } else {
+      materielEl.classList.add("d-none");
+    }
+  }
   clone.querySelector(".veg-regime").textContent = menu.regime?.libelle ?? "?";
   clone.querySelector(".veg-nb").textContent = menu.nb_personne_mini ?? 1;
   clone.querySelector(".veg-prix").textContent = `${formatEuro(menu.prix_par_personne)} / pers`;
@@ -242,7 +257,12 @@ function renderMenu(menu) {
 
     const defaultRes = [
       "Pensez à réserver ce menu au minimum 48h à l’avance.",
-      "Aucun retour de matériel prévu sur ce menu.",
+      "Pensez à bien vérifier votre adresse de livraison (si elle change de la votre).",
+      Boolean(menu.pret_materiel)
+      ? "Prêt de matériel inclus : Le matériel mis à disposition dans le cadre de la prestation demeure la propriété de Vite & Gourmand.\n\
+          Il devra être restitué en bon état dans un délai de 10 jours ouvrés suivant la date de prestation.\n\
+          À défaut de restitution dans ce délai, une indemnité forfaitaire de 600€ sera appliquée au client."
+      :"Aucun retour de matériel prévu sur ce menu.",
       "Vérifier les risques d’allergies avant toute commande.",
     ];
     const defaultSto = [

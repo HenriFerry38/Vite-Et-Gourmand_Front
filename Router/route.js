@@ -11,7 +11,7 @@ export default class Route {
 /* authorize 
 [] = accès public.
 ["disconnected"] = Visiteurs ou Utilisateurs déconnectés
-["utilisateur"] = utilisateurs enregistrés et connecté
-["employe"] = utilisateur ayant le role employé et connecté
-["admin"] = utilisateur ayant le role admin et connecté
+["ROLE_USER"] = utilisateurs enregistrés et connecté
+["ROLE_EMPLOYEE"] = utilisateur ayant le role employé et connecté
+["ROLE_ADMIN"] = utilisateur ayant le role admin et connecté
 */
