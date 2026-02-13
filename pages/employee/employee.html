@@ -99,7 +99,50 @@
                           </div>
                         </div>
                       </div>
+                      <!-- THEME + REGIME -->
+                      <div class="row g-2 mt-2">
+                        <!-- THEME -->
+                        <div class="col-12 col-md-6">
+                          <label class="form-label small mb-1" for="m_theme">Thème</label>
+                          <div class="d-flex gap-2">
+                            <select id="m_theme" class="form-select form-select-sm" required>
+                              <option value="">Chargement…</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnThemeToggle">+ Nouveau</button>
+                          </div>
 
+                          <div id="themeCreateBox" class="mt-2 d-none">
+                            <div class="input-group input-group-sm">
+                              <input id="themeLibelleInput" class="form-control" placeholder="Ex: Noël" />
+                              <button type="button" class="btn btn-secondary" id="btnThemeCreate">Créer</button>
+                            </div>
+                            <div class="form-text text-danger" id="themeMsg"></div>
+                          </div>
+
+                          <div class="invalid-feedback">Thème requis.</div>
+                        </div>
+
+                        <!-- REGIME -->
+                        <div class="col-12 col-md-6">
+                          <label class="form-label small mb-1" for="m_regime">Régime</label>
+                          <div class="d-flex gap-2">
+                            <select id="m_regime" class="form-select form-select-sm" required>
+                              <option value="">Chargement…</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnRegimeToggle">+ Nouveau</button>
+                          </div>
+
+                          <div id="regimeCreateBox" class="mt-2 d-none">
+                            <div class="input-group input-group-sm">
+                              <input id="regimeLibelleInput" class="form-control" placeholder="Ex: Végétarien" />
+                              <button type="button" class="btn btn-secondary" id="btnRegimeCreate">Créer</button>
+                            </div>
+                            <div class="form-text text-danger" id="regimeMsg"></div>
+                          </div>
+
+                          <div class="invalid-feedback">Régime requis.</div>
+                        </div>
+                      </div>
                       <button class="btn btn-secondary w-100 mt-3" type="submit" id="m_submit">
                         Créer le menu
                       </button>
@@ -124,17 +167,43 @@
                       <p class="text-muted mb-0">Chargement…</p>
                     </div>
 
-                    <div class="mt-3 d-none" id="menu-editor">
-                      <hr />
-                      <h4 class="h6">Gestion du menu sélectionné</h4>
+                    <!-- Template item menu (boutons définis dans le HTML) -->
+                    <template id="tpl-menu-item">
+                      <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                          <div class="me-2">
+                            <div class="fw-semibold" data-field="titre">Titre</div>
+                            <div class="small text-muted" data-field="meta">Stock: 0</div>
+                          </div>
 
-                      <div class="alert alert-info mb-3">
-                        Ici: bouton “Ajouter un plat”, upload photo plat, choix allergènes, liaison menu ↔ plats.
+                          <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                            <span class="badge text-bg-secondary" data-field="id">0</span>
+
+                            <button
+                              type="button"
+                              class="btn btn-outline-secondary btn-sm"
+                              data-action="select">
+                              Sélectionner
+                            </button>
+
+                            <a
+                              class="btn btn-secondary btn-sm"
+                              href="/menu-edit?id=1"
+                              onclick="route(event)"
+                              data-action="edit">
+                              Modifier
+                            </a>
+
+                            <button
+                              type="button"
+                              class="btn btn-outline-danger btn-sm"
+                              data-action="delete">
+                              Supprimer
+                            </button>
+                          </div>
+                        </div>
                       </div>
-
-                      <div id="menu-editor-content"></div>
-                    </div>
-
+                    </template>
                   </div>
                 </div>
               </div>
@@ -187,7 +256,7 @@
                   </div>
                   <div class="modal-body">
                     <p class="text-muted small">
-                      Conformément à l’évaluation, tu dois indiquer le mode de contact et le motif.
+                      Conformément à la clause de l'entreprise, tu dois indiquer le mode de contact et le motif.
                     </p>
 
                     <input type="hidden" id="cancel-commande-id" />

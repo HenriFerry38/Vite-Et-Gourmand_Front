@@ -76,11 +76,24 @@ function showAndHideElementsForRoles() {
   });
 }
 
+function hasRole(user, role) {
+  return Array.isArray(user?.roles) && user.roles.includes(role);
+}
+
+function isSimpleUser(user) {
+  // "Mon compte" seulement si user, mais PAS employee/admin
+  return hasRole(user, "ROLE_USER")
+    && !hasRole(user, "ROLE_EMPLOYEE")
+    && !hasRole(user, "ROLE_ADMIN");
+}
+
 async function refreshNavByRoles() {
   const linkEmployee = document.querySelector('[data-nav="employee"]');
-  if (!linkEmployee) return;
+  const linkAccount = document.querySelector('[data-nav="account"]');
 
-  linkEmployee.classList.add("d-none");
+  // reset visuel (sécurité)
+  if (linkEmployee) linkEmployee.classList.add("d-none");
+  if (linkAccount) linkAccount.classList.add("d-none");
 
   if (!isConnected()) return;
 
@@ -91,11 +104,16 @@ async function refreshNavByRoles() {
     if (!res.ok) return;
 
     const me = await res.json();
-    const roles = me.roles ?? [];
-    const isStaff = roles.includes("ROLE_EMPLOYEE") || roles.includes("ROLE_ADMIN");
 
-    linkEmployee.classList.toggle("d-none", !isStaff);
+    const isStaff = hasRole(me, "ROLE_EMPLOYEE") || hasRole(me, "ROLE_ADMIN");
+
+    if (linkEmployee) linkEmployee.classList.toggle("d-none", !isStaff);
+    if (linkAccount) linkAccount.classList.toggle("d-none", !isSimpleUser(me));
   } catch (e) {
     console.error("refreshNavByRoles error:", e);
   }
 }
+document.addEventListener("DOMContentLoaded", async () => {
+    showAndHideElementsForRoles();  // gère connecté / pas connecté (simple)
+    await refreshNavByRoles();      // gère Mon compte / Employé selon /account/me
+});

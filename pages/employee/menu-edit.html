@@ -1,0 +1,202 @@
+<main id="page-menu-edit" class="container my-4">
+  <section class="veg-hero mb-4">
+    <div class="container">
+      <div class="veg-hero__wrapper">
+        <div class="veg-hero__media">
+          <div class="veg-hero__img">
+            <img src="../images/delices_Viandard.jpg" alt="Espace Employé">
+          </div>
+
+          <div class="veg-hero__overlay d-flex align-items-center justify-content-center">
+            <h1 class="veg-hero__title">Modifier Menu</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <p class="text-muted mb-0 small" id="edit-subtitle">Chargement…</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="/employee?tab=menus" onclick="route(event)">
+        ← Retour
+      </a>
+      <button class="btn btn-outline-danger btn-sm" id="btn-delete-menu">
+        Supprimer
+      </button>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-3 p-md-4">
+      <form id="menu-edit-form" novalidate>
+        <input type="hidden" id="edit_id" />
+
+        <div class="mb-2">
+          <label class="form-label small mb-1" for="edit_titre">Titre</label>
+          <input class="form-control form-control-sm" id="edit_titre" required />
+          <div class="invalid-feedback">Titre requis.</div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label small mb-1" for="edit_desc">Description</label>
+          <textarea class="form-control form-control-sm" id="edit_desc" rows="2"></textarea>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1" for="edit_nbmin">Nb pers mini</label>
+            <input class="form-control form-control-sm" id="edit_nbmin" type="number" min="1" required />
+            <div class="invalid-feedback">Minimum requis.</div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1" for="edit_prix">Prix / pers</label>
+            <input class="form-control form-control-sm" id="edit_prix" type="number" step="0.01" min="0" required />
+            <div class="invalid-feedback">Prix requis.</div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1" for="edit_stock">Stock</label>
+            <input class="form-control form-control-sm" id="edit_stock" type="number" min="0" required />
+            <div class="invalid-feedback">Stock requis.</div>
+          </div>
+
+          <div class="col-6 col-md-3 d-flex align-items-end">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="edit_pret" />
+              <label class="form-check-label" for="edit_pret">Prêt matériel</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-2 mt-2">
+          <div class="col-12 col-md-6">
+            <label class="form-label small mb-1" for="edit_theme">Thème</label>
+            <select id="edit_theme" class="form-select form-select-sm" required>
+              <option value="">Chargement…</option>
+            </select>
+            <div class="invalid-feedback">Thème requis.</div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label small mb-1" for="edit_regime">Régime</label>
+            <select id="edit_regime" class="form-select form-select-sm" required>
+              <option value="">Chargement…</option>
+            </select>
+            <div class="invalid-feedback">Régime requis.</div>
+          </div>
+        </div>
+        <hr class="my-4"/>
+
+        <section aria-label="Gestion des plats">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <h2 class="h6 mb-0">Plats du menu</h2>
+            <small class="text-muted" id="plats-count">0 plat</small>
+        </div>
+
+        <!-- Liste des plats liés au menu -->
+        <div id="menu-plats-list" class="list-group mb-3">
+            <div class="list-group-item text-muted small">Chargement…</div>
+        </div>
+
+        <div class="row g-2">
+            <!-- Ajouter un plat existant -->
+            <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                <h3 class="h6 mb-2">Ajouter un plat existant</h3>
+
+                <div class="d-flex gap-2">
+                    <select id="plat_pick" class="form-select form-select-sm">
+                    <option value="">Chargement…</option>
+                    </select>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-add-plat">
+                    Ajouter
+                    </button>
+                </div>
+
+                <div class="form-text" id="plat-pick-msg"></div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Créer un nouveau plat -->
+            <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <h3 class="h6 mb-0">Créer un nouveau plat</h3>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-toggle-plat-create">
+                    + Nouveau
+                    </button>
+                </div>
+
+                <div id="plat-create-box" class="mt-3 d-none">
+                    <div class="mb-2">
+                    <label class="form-label small mb-1" for="p_titre">Titre</label>
+                    <input id="p_titre" class="form-control form-control-sm" placeholder="Ex: Tatin d’endives" />
+                    </div>
+
+                    <div class="mb-2">
+                    <label class="form-label small mb-1" for="p_desc">Description</label>
+                    <textarea id="p_desc" class="form-control form-control-sm" rows="2"></textarea>
+                    </div>
+
+                    <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small mb-1" for="p_prix">Prix</label>
+                        <input id="p_prix" type="number" step="0.01" min="0" class="form-control form-control-sm" />
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label small mb-1" for="p_categorie">Catégorie</label>
+                        <select id="p_categorie" class="form-select form-select-sm">
+                        <option value="entree">Entrée</option>
+                        <option value="plat">Plat</option>
+                        <option value="dessert">Dessert</option>
+                        </select>
+                    </div>
+                    </div>
+
+                    <div class="mt-2 d-flex gap-2 align-items-center">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-create-plat">
+                        Créer + Ajouter au menu
+                    </button>
+                    <span class="text-muted small" id="plat-create-msg"></span>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- template rendu plat -->
+        <template id="tpl-menu-plat-item">
+            <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <div class="me-2">
+                <div class="fw-semibold" data-field="titre">Plat</div>
+                <div class="small text-muted" data-field="meta">—</div>
+                </div>
+
+                <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-plat">
+                Retirer
+                </button>
+            </div>
+            </div>
+        </template>
+        </section>
+
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-secondary" type="submit" id="btn-save-menu">
+            Enregistrer
+          </button>
+          <span class="text-muted small align-self-center" id="edit-msg"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

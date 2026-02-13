@@ -3,9 +3,12 @@
 
 const TABS = ["menus", "commandes", "avis"];
 
-initEmployee();
+// ✅ Flag pour ne pas rebinder / recharger 50 fois
+let themeRegimeInitDone = false;
 
-async function initEmployee() {
+
+
+export async function init() {
   const errorEl = document.getElementById("employee-error");
   const welcomeEl = document.getElementById("employee-welcome");
   const btnRefresh = document.getElementById("btn-refresh");
@@ -61,13 +64,17 @@ async function initEmployee() {
     menuForm.classList.add("was-validated");
     if (!menuForm.checkValidity()) return;
 
+    // ✅ themeId / regimeId demandés par Swagger
     const payload = {
       titre: val("m_titre"),
       description: val("m_desc"),
       nb_personne_mini: Number(val("m_nbmin")),
-      prix_par_personne: Number(val("m_prix")),
+      prix_par_personne: String(val("m_prix")).replace(",", "."),
       quantite_restaurant: Number(val("m_stock")),
       pret_materiel: Boolean(document.getElementById("m_pret")?.checked),
+
+      themeId: Number(val("m_theme")),
+      regimeId: Number(val("m_regime")),
     };
 
     const btn = document.getElementById("m_submit");
@@ -97,7 +104,10 @@ async function initEmployee() {
       menuForm.reset();
       menuForm.classList.remove("was-validated");
 
-      if (getActiveTab() === "menus") await loadMenus();
+      // ✅ recharge listes + (optionnel) recharge selects (au cas où)
+      if (getActiveTab() === "menus") {
+        await Promise.all([loadMenus(), loadThemes(), loadRegimes()]);
+      }
     } catch (err) {
       console.error(err);
       alert("Impossible de créer le menu (réseau/API).");
@@ -178,7 +188,11 @@ function getTabFromUrl() {
 }
 
 async function loadTab(tab) {
-  if (tab === "menus") return loadMenus();
+  if (tab === "menus") {
+    // ✅ init pickers seulement quand on ouvre l’onglet menus
+    await initThemeRegimePickers();
+    return loadMenus();
+  }
   if (tab === "commandes") return loadCommandes();
   if (tab === "avis") return loadAvis();
 }
@@ -188,6 +202,8 @@ async function loadTab(tab) {
 async function loadMenus() {
   const listEl = document.getElementById("menus-list");
   const searchEl = document.getElementById("menus-search");
+  const tpl = document.getElementById("tpl-menu-item");
+
   if (!listEl) return;
 
   listEl.innerHTML = `<p class="text-muted mb-0">Chargement…</p>`;
@@ -213,39 +229,64 @@ async function loadMenus() {
       return;
     }
 
+    // ✅ container pour les items
     listEl.innerHTML = `
-      <div class="list-group">
-        ${menus
-          .map(
-            (m) => `
-          <button type="button" class="list-group-item list-group-item-action menu-pick"
-            data-id="${m.id}">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <div class="fw-semibold">${escapeHtml(m.titre ?? "Menu")}</div>
-                <div class="small text-muted">
-                  Stock: ${escapeHtml(String(m.quantite_restaurant ?? 0))}
-                  ${m.pret_materiel ? " • Prêt matériel" : ""}
-                </div>
-              </div>
-              <span class="badge text-bg-secondary">${escapeHtml(String(m.id))}</span>
-            </div>
-          </button>
-        `
-          )
-          .join("")}
-      </div>
+      <div class="list-group" id="menus-group"></div>
       <p class="text-muted small mt-2 mb-0">
         Sélectionne un menu pour gérer ses plats, photos et allergènes.
       </p>
     `;
 
-    // bind picks
-    listEl.querySelectorAll(".menu-pick").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
+    const group = document.getElementById("menus-group");
+
+    // sécurité: template absent
+    if (!tpl) {
+      console.warn("Template #tpl-menu-item introuvable");
+      return;
+    }
+
+    menus.forEach((m) => {
+      const node = tpl.content.firstElementChild.cloneNode(true);
+
+      const id = String(m.id ?? "");
+      const titre = m.titre ?? "Menu";
+      const stock = String(m.quantite_restaurant ?? 0);
+      const pret = m.pret_materiel ? " • Prêt matériel" : "";
+
+      // champs texte
+      const elTitre = node.querySelector('[data-field="titre"]');
+      const elMeta = node.querySelector('[data-field="meta"]');
+      const elId = node.querySelector('[data-field="id"]');
+
+      if (elTitre) elTitre.textContent = titre;
+      if (elMeta) elMeta.textContent = `Stock: ${stock}${pret}`;
+      if (elId) elId.textContent = id;
+
+      // actions
+      const btnSelect = node.querySelector('[data-action="select"]');
+      const linkEdit = node.querySelector('[data-action="edit"]');
+      const btnDelete = node.querySelector('[data-action="delete"]');
+
+      // Sélectionner (ouvre ton editor actuel)
+      btnSelect?.addEventListener("click", async () => {
         await openMenuEditor(id);
       });
+
+      // Modifier (route SPA vers page edit)
+      if (linkEdit) {
+        linkEdit.setAttribute("href", `/menu-edit?id=${encodeURIComponent(id)}`);
+        linkEdit.addEventListener("click", (e) => {
+          // si ton route() existe globalement, on le laisse gérer
+          route(e);
+        });
+      }
+
+      // Supprimer
+      btnDelete?.addEventListener("click", async () => {
+        await deleteMenu(id);
+      });
+
+      group.appendChild(node);
     });
 
     // bind search live
@@ -259,6 +300,7 @@ async function loadMenus() {
   }
 }
 
+
 async function openMenuEditor(menuId) {
   const editor = document.getElementById("menu-editor");
   const content = document.getElementById("menu-editor-content");
@@ -271,6 +313,189 @@ async function openMenuEditor(menuId) {
       Prochaine étape: CRUD Plat + upload photo + choix allergènes + liaison au menu.
     </div>
   `;
+}
+
+async function deleteMenu(id) {
+  const ok = confirm("⚠️ Supprimer ce menu ?\nCette action est irréversible.");
+  if (!ok) return;
+
+  try {
+    const res = await fetch(`${apiUrl}menu/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "X-AUTH-TOKEN": getToken(),
+      },
+    });
+
+    const txt = await res.text().catch(() => "");
+    const data = safeJson(txt);
+
+    if (!res.ok) {
+      console.error("DELETE menu error:", res.status, data || txt);
+      alert("Impossible de supprimer le menu.");
+      return;
+    }
+
+    alert("Menu supprimé ✅");
+    await loadMenus();
+  } catch (e) {
+    console.error(e);
+    alert("Erreur réseau/API.");
+  }
+}
+/* ---------------- THEME / REGIME (NEW) ---------------- */
+
+// ✅ Fetch helper avec token
+async function apiAuthFetch(path, options = {}) {
+  const res = await fetch(`${apiUrl}${path}`, {
+    ...options,
+    headers: {
+      Accept: "application/json",
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      "X-AUTH-TOKEN": getToken(),
+      ...(options.headers || {}),
+    },
+  });
+
+  const txt = await res.text().catch(() => "");
+  const data = safeJson(txt);
+
+  if (!res.ok) {
+    const msg = data?.message || data?.detail || txt || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+
+  return data;
+}
+
+function fillSelectByLibelle(selectEl, items, placeholder) {
+  selectEl.innerHTML = "";
+  selectEl.appendChild(new Option(placeholder, ""));
+  for (const it of items) {
+    selectEl.appendChild(new Option(it.libelle ?? `#${it.id}`, String(it.id)));
+  }
+}
+
+function extractItems(data) {
+  return Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
+}
+
+async function loadThemes() {
+  const sel = document.getElementById("m_theme");
+  if (!sel) return [];
+  sel.innerHTML = `<option value="">Chargement…</option>`;
+
+  const data = await apiAuthFetch("theme", { method: "GET" }); // GET /api/theme
+  const items = extractItems(data);
+  fillSelectByLibelle(sel, items, "Choisir un thème…");
+  return items;
+}
+
+async function loadRegimes() {
+  const sel = document.getElementById("m_regime");
+  if (!sel) return [];
+  sel.innerHTML = `<option value="">Chargement…</option>`;
+
+  const data = await apiAuthFetch("regime", { method: "GET" }); // GET /api/regime
+  const items = extractItems(data);
+  fillSelectByLibelle(sel, items, "Choisir un régime…");
+  return items;
+}
+
+async function createTheme(libelle) {
+  return apiAuthFetch("theme", {
+    method: "POST",
+    body: JSON.stringify({ libelle }),
+  });
+}
+
+async function createRegime(libelle) {
+  return apiAuthFetch("regime", {
+    method: "POST",
+    body: JSON.stringify({ libelle }),
+  });
+}
+
+function setupThemeRegimeUI() {
+  const themeToggle = document.getElementById("btnThemeToggle");
+  const themeBox = document.getElementById("themeCreateBox");
+  const themeInput = document.getElementById("themeLibelleInput");
+  const themeCreateBtn = document.getElementById("btnThemeCreate");
+  const themeMsg = document.getElementById("themeMsg");
+  const themeSelect = document.getElementById("m_theme");
+
+  const regimeToggle = document.getElementById("btnRegimeToggle");
+  const regimeBox = document.getElementById("regimeCreateBox");
+  const regimeInput = document.getElementById("regimeLibelleInput");
+  const regimeCreateBtn = document.getElementById("btnRegimeCreate");
+  const regimeMsg = document.getElementById("regimeMsg");
+  const regimeSelect = document.getElementById("m_regime");
+
+  themeToggle?.addEventListener("click", () => {
+    if (themeMsg) themeMsg.textContent = "";
+    themeBox?.classList.toggle("d-none");
+    themeInput?.focus();
+  });
+
+  regimeToggle?.addEventListener("click", () => {
+    if (regimeMsg) regimeMsg.textContent = "";
+    regimeBox?.classList.toggle("d-none");
+    regimeInput?.focus();
+  });
+
+  themeCreateBtn?.addEventListener("click", async () => {
+    const libelle = (themeInput?.value ?? "").trim();
+    if (!libelle) return (themeMsg.textContent = "Libellé requis.");
+    themeMsg.textContent = "Création…";
+
+    try {
+      const created = await createTheme(libelle); // {id, libelle, createdAt}
+      await loadThemes();
+      if (themeSelect) themeSelect.value = String(created.id);
+      if (themeInput) themeInput.value = "";
+      themeBox?.classList.add("d-none");
+      themeMsg.textContent = "";
+    } catch (e) {
+      themeMsg.textContent = `Erreur: ${e.message}`;
+    }
+  });
+
+  regimeCreateBtn?.addEventListener("click", async () => {
+    const libelle = (regimeInput?.value ?? "").trim();
+    if (!libelle) return (regimeMsg.textContent = "Libellé requis.");
+    regimeMsg.textContent = "Création…";
+
+    try {
+      const created = await createRegime(libelle);
+      await loadRegimes();
+      if (regimeSelect) regimeSelect.value = String(created.id);
+      if (regimeInput) regimeInput.value = "";
+      regimeBox?.classList.add("d-none");
+      regimeMsg.textContent = "";
+    } catch (e) {
+      regimeMsg.textContent = `Erreur: ${e.message}`;
+    }
+  });
+}
+
+async function initThemeRegimePickers() {
+  if (themeRegimeInitDone) return;
+
+  // On ne fait l'init que si les éléments existent (onglet menus)
+  const themeSel = document.getElementById("m_theme");
+  const regimeSel = document.getElementById("m_regime");
+  if (!themeSel || !regimeSel) return;
+
+  themeRegimeInitDone = true;
+
+  setupThemeRegimeUI();
+
+  try {
+    await Promise.all([loadThemes(), loadRegimes()]);
+  } catch (e) {
+    console.error("initThemeRegimePickers:", e);
+  }
 }
 
 /* ---------------- COMMANDES ---------------- */
@@ -348,20 +573,19 @@ async function loadCommandes() {
 
 function renderCommandeRow(c) {
   const id = escapeHtml(String(c.id ?? ""));
-  
+
   const clientRaw =
-  c.client?.email ??
-  c.user?.email ??
-  c.email ??
-  `${c.nom ?? ""} ${c.prenom ?? ""}`.trim();
-    
+    c.client?.email ??
+    c.user?.email ??
+    c.email ??
+    `${c.nom ?? ""} ${c.prenom ?? ""}`.trim();
+
   const client = escapeHtml(clientRaw || "—");
 
   const statut = escapeHtml(String(c.statut ?? "—"));
   const date = escapeHtml(String(c.date_prestation ?? "—"));
   const heure = escapeHtml(String(c.heure_prestation ?? "—"));
 
-  // TODO: map statut -> next statut
   const nextStatut = guessNextStatut(c.statut);
 
   const nextBtn = nextStatut
@@ -389,7 +613,6 @@ function renderCommandeRow(c) {
 }
 
 function guessNextStatut(statut) {
-  // Adapte à tes valeurs d'enum exactes
   const s = String(statut ?? "");
   const order = [
     "en_attente",
@@ -405,8 +628,6 @@ function guessNextStatut(statut) {
   if (idx === -1) return null;
   if (idx === order.length - 1) return null;
 
-  // Important: le passage "livree" -> "terminee" dépend du prêt matériel
-  // Ici on laisse la logique simple. On gérera ça côté API avec pret_materiel.
   return order[idx + 1];
 }
 
@@ -445,7 +666,6 @@ function openCancelModal(commandeId) {
   document.getElementById("cancel-contact").value = "";
   document.getElementById("cancel-motif").value = "";
 
-  // Bootstrap modal
   const el = document.getElementById("modal-cancel");
   if (!el || !window.bootstrap) {
     alert("Modal indisponible (Bootstrap JS non chargé).");
@@ -487,7 +707,6 @@ async function submitCancel() {
       return;
     }
 
-    // close modal
     const el = document.getElementById("modal-cancel");
     if (el && window.bootstrap) bootstrap.Modal.getOrCreateInstance(el).hide();
 
@@ -507,7 +726,6 @@ async function loadAvis() {
   listEl.innerHTML = `<p class="text-muted mb-0">Chargement…</p>`;
 
   try {
-    // À adapter à ton endpoint final
     const res = await fetch(`${apiUrl}avis?status=pending`, {
       headers: { Accept: "application/json", "X-AUTH-TOKEN": getToken() },
     });

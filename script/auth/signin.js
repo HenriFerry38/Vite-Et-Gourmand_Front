@@ -40,8 +40,12 @@ function checkCredentials(){
         setToken(token);
         //On place le token en cookies
         setCookie(roleCookieName, result.roles[0], 7);
-        window.location.replace("/");
 
+        showAndHideElementsForRoles();
+        refreshNavByRoles();
+
+        window.location.replace("/");
+        
     })
     .catch((error) => console.error(error));
 }
