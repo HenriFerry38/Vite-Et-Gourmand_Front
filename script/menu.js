@@ -55,18 +55,28 @@ function extractAllergens(plats) {
   return [...set];
 }
 
-// ✅ ton champ s'appelle "photo"
+// ✅ Photo plat (back uploads + front placeholders)
 function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
   const v = (photoValue ?? "").trim();
   if (!v) return fallback;
 
+  // base = http://127.0.0.1:8000/  (on retire /api/)
+  const baseUrl = apiUrl.replace(/api\/?$/, "");
+
+  // 1) URL absolue
   if (v.startsWith("http://") || v.startsWith("https://")) return v;
 
+  // 2) chemins absolus connus
+  if (v.startsWith("/uploads/")) return `${baseUrl}${v.replace(/^\//, "")}`; // -> http://.../uploads/...
   if (v.startsWith("/images/")) return v;
-  if (v.startsWith("images/")) return `/${v}`;
-  if (v.startsWith("/")) return v;
 
-  return `/images/${v}`;
+  // 3) chemins relatifs
+  if (v.startsWith("uploads/")) return `${baseUrl}${v}`; // -> http://.../uploads/...
+  if (v.startsWith("images/")) return `/${v}`;
+
+  // 4) sinon: c'est un filename stocké en BDD (ex: plat_12_abcd.jpg)
+  // -> on pointe sur le back
+  return `${baseUrl}uploads/plats/${v}`;
 }
 
 function getPlatLabel(p) {
@@ -312,6 +322,7 @@ async function loadAllMenus() {
 
     container.innerHTML = "";
     menus.forEach((menu) => container.appendChild(renderMenu(menu)));
+    initBootstrapCarousels(container);
   } catch (e) {
     console.error(e);
     container.innerHTML = `
@@ -322,4 +333,15 @@ async function loadAllMenus() {
   }
 }
 
-loadAllMenus();
+function initBootstrapCarousels(scope = document) {
+  if (!window.bootstrap?.Carousel) return;
+  scope.querySelectorAll(".carousel").forEach((el) => {
+    const inst = window.bootstrap.Carousel.getInstance(el);
+    if (inst) inst.dispose();
+    new window.bootstrap.Carousel(el);
+  });
+}
+
+export async function init() {
+  await loadAllMenus();
+}

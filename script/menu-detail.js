@@ -49,6 +49,7 @@ async function initMenuDetail() {
   // 4) Render card principale
   container.innerHTML = "";
   container.appendChild(renderMenuCard(menu));
+  initBootstrapCarousels(container);
 
   // 5) Hero title
   if (heroTitle && menu?.titre) heroTitle.textContent = menu.titre;
@@ -114,7 +115,7 @@ function renderMenuCard(menu) {
   // On cible l'élément racine de la card clonée
   const rootEl = clone.querySelector(".veg-menu") ?? clone.querySelector(".veg-menu-card");
   if (rootEl) {
-    fillMenuCarousel(rootEl, menu, plats);
+    fillMenuCarousel(clone, menu, plats);
   }
 
   return clone;
@@ -289,12 +290,23 @@ function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
   const v = (photoValue ?? "").trim();
   if (!v) return fallback;
 
-  if (v.startsWith("http://") || v.startsWith("https://")) return v;
-  if (v.startsWith("/images/")) return v;
-  if (v.startsWith("images/")) return `/${v}`;
-  if (v.startsWith("/")) return v;
+  const baseUrl = apiUrl.replace(/api\/?$/, "");
 
-  return `/images/${v}`;
+  // 1) URL absolue
+  if (v.startsWith("http://") || v.startsWith("https://")) return v;
+
+  // 2) chemins absolus
+  // /uploads/... doit venir du back
+  if (v.startsWith("/uploads/")) return `${baseUrl}${v.replace(/^\//, "")}`;
+  // /images/... reste du front
+  if (v.startsWith("/images/")) return v;
+
+  // 3) chemins relatifs
+  if (v.startsWith("uploads/")) return `${baseUrl}${v}`;
+  if (v.startsWith("images/")) return `/${v}`;
+
+  // 4) sinon => filename stocké en BDD
+  return `${baseUrl}uploads/plats/${v}`;
 }
 
 function getPlatLabel(p) {
@@ -468,4 +480,24 @@ function bindAllergenLink(linkId, plats) {
   });
 }
 
-initMenuDetail();
+function initBootstrapCarousels(scope = document) {
+  // si Bootstrap JS n'est pas chargé, on ne crash pas
+  if (!window.bootstrap?.Carousel) return;
+
+  scope.querySelectorAll(".carousel").forEach((el) => {
+    // évite double init
+    const existing = window.bootstrap.Carousel.getInstance(el);
+    if (existing) existing.dispose();
+
+    new window.bootstrap.Carousel(el, {
+      interval: 4000,
+      ride: el.dataset.bsRide ? "carousel" : false,
+      pause: "hover",
+      touch: true,
+    });
+  });
+}
+
+export async function init() {
+  await initMenuDetail();
+}

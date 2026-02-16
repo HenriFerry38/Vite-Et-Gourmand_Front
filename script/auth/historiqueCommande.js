@@ -1,5 +1,11 @@
 console.log("historique chargé");
 
+function formatDateTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
+}
+
 async function loadHistorique() {
 
   if (!isConnected()) {
@@ -34,25 +40,47 @@ async function loadHistorique() {
       return;
     }
 
-    const badgeClass = (s) => {
-    if (s === "EN_ATTENTE") return "bg-warning text-dark";
-    if (s === "TERMINEE") return "bg-success";
-    return "bg-secondary";
-    };
+    const statutLabel = (s) => {
+        const key = String(s ?? "").toLowerCase();
+        const labels = {
+            en_attente: "En attente",
+            acceptee: "Acceptée",
+            refusee: "Refusée",
+            preparation: "Préparation",
+            livraison: "Livraison",
+            livree: "Livrée",
+            retour_materiel: "Retour matériel",
+            annulee: "Annulée",
+            terminee: "Terminée",
+        };
+        return labels[key] ?? (s ?? "—");
+        };
 
-    container.innerHTML = commandes.map(c => {
-        const editBtn = (c.statut === "en_attente")
+        const badgeClass = (s) => {
+        const key = String(s ?? "").toLowerCase();
+        if (key === "en_attente") return "bg-warning text-dark";
+        if (key === "terminee") return "bg-success";
+        if (key === "refusee" || key === "annulee") return "bg-danger";
+        if (key === "livree") return "bg-info text-dark";
+        if (key === "preparation" || key === "livraison") return "bg-primary";
+        return "bg-secondary";
+        };
+
+        container.innerHTML = commandes.map(c => {
+        const statutKey = String(c.statut ?? "").toLowerCase();
+
+        const editBtn = (statutKey === "en_attente")
             ? `<a href="/editCommande?commandeId=${encodeURIComponent(c.id)}"
-                    class="btn btn-outline-primary btn-sm">
-                    Modifier la commande
-                </a>`
+                class="btn btn-outline-primary btn-sm">
+                Modifier la commande
+            </a>`
             : "";
 
-            const avisBtn = (c.statut === "terminee")
+        const avisBtn = (statutKey === "terminee")
             ? `<a href="/editAvis?commandeId=${encodeURIComponent(c.id)}"
-                    class="btn btn-primary btn-sm">
-                    Laisser un avis
-                </a>`
+                class="btn btn-primary btn-sm">
+                Laisser un avis
+            </a>`
             : "";
 
         return `
@@ -61,19 +89,28 @@ async function loadHistorique() {
                 <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <h5 class="card-title mb-1">Commande #${c.numero_commande}</h5>
-                    <span class="badge ${c.statut === "TERMINEE" ? "bg-success" : "bg-warning text-dark"}">
-                    ${c.statut}
+                    <span class="badge ${badgeClass(statutKey)}">
+                    ${statutLabel(statutKey)}
                     </span>
                 </div>
 
-                <p class="mb-1"><strong>Date :</strong> ${c.date_prestation}</p>
-                <p class="mb-1"><strong>Heure :</strong> ${c.heure_prestation}</p>
-                <p class="mb-1"><strong>Personnes :</strong> ${c.nb_personne}</p>
-                <p class="mb-1"><strong>Menu :</strong> ${c.menu?.titre ?? "Menu"}</p>
-                <p class="fw-bold text-primary mb-0">${c.prix_total} €</p>
+                <p class="mb-1"><strong>Date :</strong> ${c.date_prestation ?? "—"}</p>
+                <p class="mb-1"><strong>Heure :</strong> ${c.heure_prestation ?? "—"}</p>
 
-                <div class="d-flex justify-content-end mt-3">
-                    ${editBtn}    
+                <!-- ✅ Traçabilité -->
+                <p class="mb-1">
+                    <strong>Maj statut :</strong>
+                    ${c.statut_updated_at 
+                    ? `${statutLabel(statutKey)} le ${formatDateTime(c.statut_updated_at)}`
+                    : "Aucune mise à jour enregistrée"}
+                </p>
+
+                <p class="mb-1"><strong>Personnes :</strong> ${c.nb_personne ?? "—"}</p>
+                <p class="mb-1"><strong>Menu :</strong> ${c.menu?.titre ?? "Menu"}</p>
+                <p class="fw-bold text-primary mb-0">${c.prix_total ?? "—"} €</p>
+
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    ${editBtn}
                     ${avisBtn}
                 </div>
                 </div>

@@ -4,6 +4,7 @@
 let MENU_ID = null;
 let currentMenu = null;
 let allPlats = []; // cache plats existants
+let allAllergenes = [];
 
 export async function init() {
   // Guard connecté
@@ -30,11 +31,7 @@ export async function init() {
   // load pickers + menu + plats list
   try {
     setMsg("Chargement…");
-    await Promise.all([
-      loadThemes(),
-      loadRegimes(),
-      loadAllPlats(), // charge le select des plats existants
-    ]);
+    await Promise.all([loadThemes(), loadRegimes(), loadAllPlats(), loadAllergenes()]);
     await loadMenu(MENU_ID);
     setMsg("");
   } catch (e) {
@@ -66,6 +63,23 @@ function setSmallMsg(id, text, isError = false) {
   el.classList.toggle("text-muted", !isError);
 }
 
+function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
+  const v = (photoValue ?? "").trim();
+  if (!v) return fallback;
+
+  const baseUrl = apiUrl.replace(/api\/?$/, "");
+
+  if (v.startsWith("http://") || v.startsWith("https://")) return v;
+
+  if (v.startsWith("/uploads/")) return `${baseUrl}${v.replace(/^\//, "")}`;
+  if (v.startsWith("/images/")) return v;
+
+  if (v.startsWith("uploads/")) return `${baseUrl}${v}`;
+  if (v.startsWith("images/")) return `/${v}`;
+
+  return `${baseUrl}uploads/plats/${v}`;
+}
+
 /* ---------------- API ---------------- */
 
 async function apiAuthFetch(path, options = {}) {
@@ -90,9 +104,34 @@ async function apiAuthFetch(path, options = {}) {
   return data;
 }
 
+async function uploadPlatPhoto(platId, file) {
+  const fd = new FormData();
+  fd.append("photo", file);
+
+  const res = await fetch(`${apiUrl}plat/${encodeURIComponent(platId)}/photo`, {
+    method: "POST",
+    headers: { "X-AUTH-TOKEN": getToken() },
+    body: fd,
+  });
+
+  const txt = await res.text().catch(() => "");
+  const data = safeJson(txt);
+
+  if (!res.ok) {
+    const msg = data?.message || data?.detail || txt || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+
+  return data; // {photo, photo_url...}
+}
+
 function safeJson(txt) {
   if (!txt) return null;
-  try { return JSON.parse(txt); } catch { return null; }
+  try {
+    return JSON.parse(txt);
+  } catch {
+    return null;
+  }
 }
 
 function extractItems(data) {
@@ -108,16 +147,77 @@ function fillSelect(selectEl, items, placeholder) {
 
   for (const it of arr) {
     const id = it?.id;
-    const label =
-      it?.libelle ??
-      it?.titre ??
-      it?.name ??
-      (id != null ? `#${id}` : "—");
-
+    const label = it?.libelle ?? it?.titre ?? it?.name ?? (id != null ? `#${id}` : "—");
     if (id == null) continue;
     selectEl.appendChild(new Option(String(label), String(id)));
   }
 }
+
+function normalizeCategorie(cat) {
+  const c = String(cat ?? "").trim().toLowerCase();
+  if (["entree", "entrée", "entrées", "entrees"].includes(c)) return "Entrées";
+  if (["plat", "plats"].includes(c)) return "Plats";
+  if (["dessert", "desserts"].includes(c)) return "Desserts";
+  return "Autres";
+}
+
+function fillSelectGroupedByCategorie(selectEl, items, placeholder) {
+  const arr = Array.isArray(items) ? items : [];
+
+  selectEl.innerHTML = "";
+  selectEl.appendChild(new Option(placeholder, ""));
+
+  // group items
+  const groups = new Map(); // label -> array
+  for (const it of arr) {
+    const id = it?.id;
+    if (id == null) continue;
+
+    const label = it?.titre ?? it?.libelle ?? it?.name ?? `#${id}`;
+    const groupLabel = normalizeCategorie(it?.categorie);
+
+    if (!groups.has(groupLabel)) groups.set(groupLabel, []);
+    groups.get(groupLabel).push({ id, label });
+  }
+
+  // ordering categories
+  const order = ["Entrées", "Plats", "Desserts", "Autres"];
+  for (const groupLabel of order) {
+    const g = groups.get(groupLabel);
+    if (!g || g.length === 0) continue;
+
+    // tri alpha (optionnel)
+    g.sort((a, b) => String(a.label).localeCompare(String(b.label), "fr"));
+
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = groupLabel;
+
+    for (const p of g) {
+      optgroup.appendChild(new Option(String(p.label), String(p.id)));
+    }
+
+    selectEl.appendChild(optgroup);
+  }
+}
+
+async function loadAllergenes() {
+  const data = await apiAuthFetch("allergene", { method: "GET" });
+  allAllergenes = extractItems(data);
+  return allAllergenes;
+}
+
+async function deletePlatDefinitif(platId) {
+  await apiAuthFetch(`plat/${encodeURIComponent(platId)}`, { method: "DELETE" });
+}
+
+async function updatePlat(platId, payload) {
+  await apiAuthFetch(`plat/${encodeURIComponent(platId)}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+
 
 /* ---------------- Theme / Regime ---------------- */
 
@@ -153,7 +253,7 @@ async function loadMenu(id) {
   document.getElementById("edit_stock").value = menu.quantite_restaurant ?? 0;
   document.getElementById("edit_pret").checked = !!menu.pret_materiel;
 
-  // IMPORTANT: chez toi menu.theme et menu.regime peuvent être un ID (number) OU objet
+  // menu.theme / menu.regime peuvent être ID (number) OU objet
   const themeId = menu.theme?.id ?? menu.themeId ?? menu.theme ?? "";
   const regimeId = menu.regime?.id ?? menu.regimeId ?? menu.regime ?? "";
 
@@ -164,7 +264,7 @@ async function loadMenu(id) {
 
   setSub(`Menu #${menu.id ?? id}`);
 
-  // plats du menu (si présents)
+  // plats du menu
   renderMenuPlats(menu);
 
   setMsg("");
@@ -181,7 +281,6 @@ async function submitEdit(e, id) {
     titre: document.getElementById("edit_titre").value.trim(),
     description: document.getElementById("edit_desc").value.trim(),
     nb_personne_mini: Number(document.getElementById("edit_nbmin").value),
-    // DECIMAL attendu en string côté Symfony chez toi
     prix_par_personne: String(document.getElementById("edit_prix").value).replace(",", "."),
     quantite_restaurant: Number(document.getElementById("edit_stock").value),
     pret_materiel: !!document.getElementById("edit_pret").checked,
@@ -201,7 +300,6 @@ async function submitEdit(e, id) {
     });
 
     setMsg("Menu modifié ✅");
-    // recharge menu (pour garder synchro)
     await loadMenu(id);
     setTimeout(() => setMsg(""), 600);
   } catch (err) {
@@ -256,25 +354,28 @@ function bindPlatsUI() {
   // Créer plat + ajouter
   document.getElementById("btn-create-plat")?.addEventListener("click", async () => {
     const titre = (document.getElementById("p_titre")?.value ?? "").trim();
-    if (!titre) return setSmallMsg("plat-create-msg", "Titre requis.", true);
+    const categorie = (document.getElementById("p_categorie")?.value ?? "").trim();
 
+    if (!titre) return setSmallMsg("plat-create-msg", "Titre requis.", true);
+    if (!categorie) return setSmallMsg("plat-create-msg", "Catégorie requise.", true);
+
+    // Aligné avec ton PlatController::create()
     const payload = {
       titre,
-      description: (document.getElementById("p_desc")?.value ?? "").trim(),
-      prix: String(document.getElementById("p_prix")?.value ?? "").replace(",", "."),
-      categorie: (document.getElementById("p_categorie")?.value ?? "plat"),
+      categorie,
+      photo: null, // optionnel
     };
 
     try {
       setSmallMsg("plat-create-msg", "Création…");
+
       const created = await createPlat(payload);
       await loadAllPlats(); // refresh select
       await addPlatToMenu(created.id);
 
       // reset form
-      document.getElementById("p_titre").value = "";
-      document.getElementById("p_desc").value = "";
-      document.getElementById("p_prix").value = "";
+      const t = document.getElementById("p_titre");
+      if (t) t.value = "";
 
       setSmallMsg("plat-create-msg", "Créé + ajouté ✅");
       setTimeout(() => setSmallMsg("plat-create-msg", ""), 900);
@@ -289,20 +390,30 @@ async function loadAllPlats() {
   const sel = document.getElementById("plat_pick");
   if (sel) sel.innerHTML = `<option value="">Chargement…</option>`;
 
-  // ⚠️ adapte si ton endpoint est différent
-  // je tente "plat/all" puis "plat"
-  let data;
-  try {
-    data = await apiAuthFetch("plat/all", { method: "GET" });
-  } catch {
-    data = await apiAuthFetch("plat", { method: "GET" });
-  }
-
+  const data = await apiAuthFetch("plat", { method: "GET" });
+  
   allPlats = extractItems(data);
 
-  if (sel) fillSelect(sel, allPlats, "Choisir un plat…");
+  // ✅ filtrer ceux déjà dans le menu
+  const alreadyIds = new Set(getMenuPlatIds(currentMenu));
+  const filtered = allPlats.filter((p) => !alreadyIds.has(Number(p?.id)));
+
+  // ✅ afficher par catégorie (optgroup)
+  if (sel) fillSelectGroupedByCategorie(sel, filtered, "Choisir un plat…");
+
+  // petit message si tout est déjà lié
+  if (sel && filtered.length === 0) {
+    // optionnel: garder le placeholder + désactiver
+    sel.disabled = true;
+    setSmallMsg("plat-pick-msg", "Tous les plats sont déjà dans ce menu ✅");
+  } else if (sel) {
+    sel.disabled = false;
+    setSmallMsg("plat-pick-msg", "");
+  }
+
   return allPlats;
 }
+
 
 function renderMenuPlats(menu) {
   const list = document.getElementById("menu-plats-list");
@@ -321,13 +432,63 @@ function renderMenuPlats(menu) {
   }
 
   list.innerHTML = "";
+
   for (const p of plats) {
-    const node = tpl?.content?.firstElementChild?.cloneNode(true);
-    if (!node) continue;
+    // Template si dispo, sinon fallback simple
+    const node = tpl?.content?.firstElementChild?.cloneNode(true) ?? document.createElement("div");
+
+    if (!tpl) {
+      node.className = "list-group-item d-flex justify-content-between align-items-center gap-3";
+      node.innerHTML = `
+        <div>
+          <div class="fw-semibold" data-field="titre"></div>
+          <div class="small text-muted" data-field="meta"></div>
+        </div>
+        <button class="btn btn-outline-danger btn-sm" data-action="remove-plat">Retirer</button>
+      `;
+    }
 
     node.querySelector("[data-field='titre']").textContent = p.titre ?? `Plat #${p.id}`;
-    node.querySelector("[data-field='meta']").textContent =
-      `${p.categorie ?? ""}${p.prix ? ` • ${p.prix}€` : ""}`.trim() || "—";
+    node.querySelector("[data-field='meta']").textContent = `${p.categorie ?? ""}`.trim() || "—";
+
+    // photo preview
+    const img = node.querySelector("[data-field='photo']");
+    if (img) {
+      img.src = resolvePhotoSrc(p.photo);
+      img.alt = p.titre ?? "Plat";
+      img.onerror = () => { img.src = "/images/placeholder.jpg"; };
+    }
+
+    // upload photo
+    const input = node.querySelector("[data-action='photo-input']");
+    const btnUpload = node.querySelector("[data-action='upload-photo']");
+
+    if (btnUpload && input) {
+      btnUpload.addEventListener("click", async () => {
+        const file = input.files?.[0];
+        if (!file) return alert("Choisis une image d’abord.");
+
+        btnUpload.disabled = true;
+        btnUpload.textContent = "Upload…";
+
+        try {
+          await uploadPlatPhoto(p.id, file);
+          await loadMenu(MENU_ID);   // refresh menu + photos
+          await loadAllPlats();      // refresh select
+        } catch (e) {
+          console.error(e);
+          alert(`Erreur upload: ${e.message}`);
+        } finally {
+          btnUpload.disabled = false;
+          btnUpload.textContent = "Photo";
+          input.value = "";
+        }
+      });
+    }
+
+    node.querySelector("[data-action='edit-plat']")?.addEventListener("click", () => {
+      openEditPlatModal(p);
+    });
 
     node.querySelector("[data-action='remove-plat']")?.addEventListener("click", async () => {
       const ok = confirm(`Retirer "${p.titre ?? "ce plat"}" du menu ?`);
@@ -341,80 +502,170 @@ function renderMenuPlats(menu) {
       }
     });
 
+    node.querySelector("[data-action='delete-plat']")?.addEventListener("click", async () => {
+      const ok = confirm(`⚠️ Supprimer définitivement "${p.titre ?? "ce plat"}" ?\nIl disparaîtra de la base de données.`);
+      if (!ok) return;
+
+      try {
+        await deletePlatDefinitif(p.id);
+        await loadMenu(MENU_ID);
+        await loadAllPlats();
+      } catch (e) {
+        console.error(e);
+        alert(`Erreur suppression: ${e.message}`);
+      }
+    });
+
     list.appendChild(node);
   }
 }
 
+function openEditPlatModal(plat) {
+  document.getElementById("edit-plat-id").value = plat.id;
+  document.getElementById("edit-plat-titre").value = plat.titre ?? "";
+  document.getElementById("edit-plat-categorie").value = String(plat.categorie ?? "plat").toLowerCase();
+
+  const msg = document.getElementById("edit-plat-msg");
+  if (msg) {
+    msg.textContent = "";
+    msg.className = "small mt-2 text-muted";
+  }
+
+  const box = document.getElementById("edit-plat-allergenes");
+  box.innerHTML = "";
+
+  const currentIds = new Set(
+    (Array.isArray(plat.allergenes) ? plat.allergenes : [])
+      .map(a => a?.id)
+      .filter(id => typeof id === "number")
+  );
+
+  for (const al of allAllergenes) {
+    const id = al?.id;
+    if (id == null) continue;
+
+    const label = al?.libelle ?? al?.nom ?? `Allergène #${id}`;
+
+    const wrap = document.createElement("label");
+    wrap.className = "form-check form-check-inline m-0";
+
+    wrap.innerHTML = `
+      <input class="form-check-input" type="checkbox" value="${id}" ${currentIds.has(id) ? "checked" : ""}>
+      <span class="form-check-label">${label}</span>
+    `;
+
+    box.appendChild(wrap);
+  }
+
+  const modalEl = document.getElementById("modal-edit-plat");
+  bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+document.getElementById("btn-save-plat")?.addEventListener("click", async () => {
+  const id = Number(document.getElementById("edit-plat-id").value);
+  const titre = document.getElementById("edit-plat-titre").value.trim();
+  const categorie = document.getElementById("edit-plat-categorie").value;
+
+  const msg = document.getElementById("edit-plat-msg");
+  const btn = document.getElementById("btn-save-plat");
+
+  if (!titre) {
+    if (msg) {
+      msg.textContent = "Titre requis.";
+      msg.className = "small mt-2 text-danger";
+    }
+    return;
+  }
+
+  const allergenesIds = [...document.querySelectorAll("#edit-plat-allergenes input[type='checkbox']:checked")]
+    .map(i => Number(i.value))
+    .filter(n => !Number.isNaN(n));
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Enregistrement…";
+  }
+  if (msg) {
+    msg.textContent = "Enregistrement…";
+    msg.className = "small mt-2 text-muted";
+  }
+
+  try {
+    await updatePlat(id, { titre, categorie, allergenesIds });
+
+    if (msg) {
+      msg.textContent = "Modifié ✅";
+      msg.className = "small mt-2 text-success";
+    }
+
+    await loadMenu(MENU_ID);
+    await loadAllPlats();
+
+    bootstrap.Modal.getInstance(document.getElementById("modal-edit-plat"))?.hide();
+  } catch (e) {
+    console.error(e);
+    if (msg) {
+      msg.textContent = `Erreur: ${e.message}`;
+      msg.className = "small mt-2 text-danger";
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Enregistrer";
+    }
+  }
+});
+
 function getMenuPlatIds(menu) {
   const plats = Array.isArray(menu?.plats) ? menu.plats : [];
-  return plats.map((p) => p?.id).filter((x) => typeof x === "number");
+  return plats
+    .map((p) => (typeof p === "number" ? p : p?.id))
+    .filter((id) => typeof id === "number");
 }
 
 async function addPlatToMenu(platId) {
-  if (!currentMenu) await loadMenu(MENU_ID);
+  if (!MENU_ID) throw new Error("MenuId manquant");
 
-  const ids = new Set(getMenuPlatIds(currentMenu));
-  ids.add(Number(platId));
+  // évite doublons: si déjà lié, on stop (UX plus clean)
+  if (currentMenu) {
+    const ids = new Set(getMenuPlatIds(currentMenu));
+    if (ids.has(Number(platId))) return;
+  }
 
-  await persistMenuPlats([...ids]);
-  await loadMenu(MENU_ID); // refresh affichage
+  // ✅ backend: POST /api/menu/{menuId}/plats/{platId}
+  await apiAuthFetch(`menu/${encodeURIComponent(MENU_ID)}/plats/${encodeURIComponent(platId)}`, {
+    method: "POST",
+  });
+
+  await loadMenu(MENU_ID);
+  await loadAllPlats();
 }
 
 async function removePlatFromMenu(platId) {
-  if (!currentMenu) await loadMenu(MENU_ID);
+  if (!MENU_ID) throw new Error("MenuId manquant");
 
-  const ids = new Set(getMenuPlatIds(currentMenu));
-  ids.delete(Number(platId));
+  // ✅ backend: DELETE /api/menu/{menuId}/plats/{platId}
+  await apiAuthFetch(`menu/${encodeURIComponent(MENU_ID)}/plats/${encodeURIComponent(platId)}`, {
+    method: "DELETE",
+  });
 
-  await persistMenuPlats([...ids]);
   await loadMenu(MENU_ID);
-}
-
-async function persistMenuPlats(platIds) {
-  // Ici, on gère plusieurs styles d’API pour ne pas te bloquer:
-  // 1) PATCH /api/menu/{id}/plats   { platIds: [...] }
-  // 2) PUT   /api/menu/{id}         { platIds: [...] }
-  // 3) PUT   /api/menu/{id}         { plats: [...] }
-  const id = MENU_ID;
-
-  const tries = [
-    () => apiAuthFetch(`menu/${encodeURIComponent(id)}/plats`, {
-      method: "PATCH",
-      body: JSON.stringify({ platIds }),
-    }),
-    () => apiAuthFetch(`menu/${encodeURIComponent(id)}`, {
-      method: "PUT",
-      body: JSON.stringify({ platIds }),
-    }),
-    () => apiAuthFetch(`menu/${encodeURIComponent(id)}`, {
-      method: "PUT",
-      body: JSON.stringify({ plats: platIds }),
-    }),
-  ];
-
-  let lastErr = null;
-  for (const t of tries) {
-    try {
-      await t();
-      return;
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-
-  throw lastErr || new Error("Impossible d’enregistrer les plats du menu.");
+  await loadAllPlats();
 }
 
 async function createPlat(payload) {
-  // ⚠️ adapte selon ton DTO backend
-  // je tente /api/plat (POST)
   const created = await apiAuthFetch("plat", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 
-  if (!created?.id) {
-    throw new Error("Plat créé mais réponse sans id.");
-  }
-  return created;
+  // selon ton controller, ça peut renvoyer un objet (avec id) ou juste 201 vide.
+  if (created?.id) return created;
+
+  // fallback: si jamais ton POST /api/plat renvoie 201 sans body,
+  // on recharge la liste et on prend le dernier (trié DESC dans index).
+  await loadAllPlats();
+  const first = allPlats?.[0];
+  if (!first?.id) throw new Error("Plat créé mais impossible de récupérer l'id.");
+  return first;
 }

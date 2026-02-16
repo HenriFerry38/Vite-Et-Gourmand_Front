@@ -565,6 +565,15 @@ async function loadCommandes() {
         openCancelModal(b.dataset.id);
       });
     });
+
+    listEl.querySelectorAll("[data-action='restitution']").forEach((b) => {
+      b.addEventListener("click", async () => {
+        const id = b.dataset.id;
+        await patchRestitutionMateriel(id);
+        await loadCommandes();
+      });
+    });
+
   } catch (e) {
     console.error(e);
     listEl.innerHTML = `<p class="text-danger mb-0">Impossible de charger les commandes.</p>`;
@@ -585,6 +594,15 @@ function renderCommandeRow(c) {
   const statut = escapeHtml(String(c.statut ?? "—"));
   const date = escapeHtml(String(c.date_prestation ?? "—"));
   const heure = escapeHtml(String(c.heure_prestation ?? "—"));
+  
+  const canConfirmRestitution = String(c.statut) === "retour_materiel" && !c.restitution_materiel;
+  const restitutionBtn = canConfirmRestitution
+    ? `<button class="btn btn-outline-success btn-sm"
+              data-action="restitution"
+              data-id="${id}">
+          Valider retour matériel
+      </button>`
+    : "";
 
   const nextStatut = guessNextStatut(c.statut);
 
@@ -602,6 +620,7 @@ function renderCommandeRow(c) {
       <td class="small text-muted">${date} ${heure}</td>
       <td class="text-end">
         <div class="d-inline-flex gap-2">
+          ${restitutionBtn}
           ${nextBtn}
           <button class="btn btn-outline-secondary btn-sm" data-action="cancel" data-id="${id}">
             Annuler
@@ -617,10 +636,10 @@ function guessNextStatut(statut) {
   const order = [
     "en_attente",
     "acceptee",
-    "en_preparation",
-    "en_cours_de_livraison",
+    "preparation",
+    "livraison",
     "livree",
-    "en_attente_du_retour_de_materiel",
+    "retour_materiel",
     "terminee",
   ];
 
@@ -653,6 +672,35 @@ async function patchStatut(id, statut) {
     }
 
     await loadCommandes();
+  } catch (e) {
+    console.error(e);
+    alert("Erreur réseau/API.");
+  }
+}
+
+async function patchRestitutionMateriel(id) {
+  try {
+    const res = await fetch(
+      `${apiUrl}commande/${encodeURIComponent(id)}/restitution-materiel`,
+      {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-AUTH-TOKEN": getToken(),
+        },
+        body: JSON.stringify({ restitution_materiel: true }),
+      }
+    );
+
+    const txt = await res.text().catch(() => "");
+    const data = safeJson(txt);
+
+    if (!res.ok) {
+      console.error("PATCH restitution error:", res.status, data || txt);
+      alert(data?.message || "Impossible de valider le retour matériel.");
+      return;
+    }
   } catch (e) {
     console.error(e);
     alert("Erreur réseau/API.");
