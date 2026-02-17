@@ -38,8 +38,7 @@ function checkCredentials(){
          //Ici on recuperere le token
         const token = result.apiToken;
         setToken(token);
-        //On place le token en cookies
-        setCookie(roleCookieName, result.roles[0], 7);
+        setRole(result.roles?.[0]);
 
         showAndHideElementsForRoles();
         refreshNavByRoles();

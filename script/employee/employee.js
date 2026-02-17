@@ -604,7 +604,7 @@ function renderCommandeRow(c) {
       </button>`
     : "";
 
-  const nextStatut = guessNextStatut(c.statut);
+  const nextStatut = guessNextStatut(c);
 
   const nextBtn = nextStatut
     ? `<button class="btn btn-secondary btn-sm" data-action="next" data-id="${id}" data-next="${escapeHtml(nextStatut)}">
@@ -631,17 +631,13 @@ function renderCommandeRow(c) {
   `;
 }
 
-function guessNextStatut(statut) {
-  const s = String(statut ?? "");
-  const order = [
-    "en_attente",
-    "acceptee",
-    "preparation",
-    "livraison",
-    "livree",
-    "retour_materiel",
-    "terminee",
-  ];
+function guessNextStatut(commande) {
+  const s = String(commande?.statut ?? "");
+  const needsRestitution = commande?.restitution_materiel === true;
+
+  const order = needsRestitution
+    ? ["en_attente", "acceptee", "preparation", "livraison", "livree", "retour_materiel", "terminee"]
+    : ["en_attente", "acceptee", "preparation", "livraison", "livree", "terminee"];
 
   const idx = order.indexOf(s);
   if (idx === -1) return null;
@@ -667,7 +663,14 @@ async function patchStatut(id, statut) {
 
     if (!res.ok) {
       console.error("PATCH statut error:", res.status, data || txt);
-      alert("Impossible de changer le statut.");
+
+      // Bonus utile: si ton API renvoie allowedNext, on l'affiche
+      if (res.status === 409 && data?.allowedNext?.length) {
+        alert(`${data.message || "Transition non autorisée."}\nÉtape(s) possible(s): ${data.allowedNext.join(", ")}`);
+        return;
+      }
+
+      alert(data?.message || "Impossible de changer le statut.");
       return;
     }
 
@@ -706,6 +709,7 @@ async function patchRestitutionMateriel(id) {
     alert("Erreur réseau/API.");
   }
 }
+
 
 /* ---------------- ANNULATION ---------------- */
 

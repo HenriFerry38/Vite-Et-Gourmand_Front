@@ -1,5 +1,6 @@
 // menu-detail.js
 // Requiert ton script global déjà chargé: apiUrl, getToken(), isConnected(), route()
+import { initCommandeHoraire } from "/script/commandeHoraire.js";
 
 async function initMenuDetail() {
   const container = document.getElementById("menu-detail-container");
@@ -171,6 +172,8 @@ function setupOrderForm(menu) {
   const form = document.getElementById("reservation-form");
   if (!form) return;
 
+  initCommandeHoraire();
+
   const checkbox = document.getElementById("conditions");
   const btn = document.getElementById("btn-commandez");
 
@@ -208,7 +211,7 @@ function setupOrderForm(menu) {
       adresse_prestation: document.getElementById("clientAdresseLivraison").value,
       nb_personne: Number(document.getElementById("nbPersonnes").value),
       date_prestation: document.getElementById("datePrestation").value,
-      heure_prestation: document.getElementById("heurePrestation").value,
+      heure_prestation: document.getElementById("selectHour").value,
     };
 
     if (btn) {

@@ -1,0 +1,175 @@
+<section class="veg-hero mb-4">
+    <div class="container">
+      <div class="veg-hero__wrapper">
+        <div class="veg-hero__media">
+          <div class="veg-hero__img">
+            <img src="../images/delices_Viandard.jpg" alt="Espace Employé">
+          </div>
+
+          <div class="veg-hero__overlay d-flex align-items-center justify-content-center">
+            <h1 class="veg-hero__title">Espace Administrateur</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+<section class="container my-4">
+  <ul class="nav nav-pills mb-3" id="adminTabs">
+    <li class="nav-item">
+      <button class="nav-link active" data-tab="employees" type="button">Employés</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-tab="stats" type="button">Statistiques</button>
+    </li>
+  </ul>
+
+  <!-- EMPLOYEES -->
+  <div id="tab-employees">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Créer un compte employé</h2>
+
+        <form id="form-create-employee" class="row g-2">
+          <div class="col-12 col-md-5">
+            <input class="form-control" type="email" name="email" placeholder="email@exemple.com" required>
+          </div>
+          <div class="col-12 col-md-5">
+            <input class="form-control" type="password" name="password" placeholder="Mot de passe" required minlength="6">
+          </div>
+          <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-dark" type="submit">Créer</button>
+          </div>
+        </form>
+
+        <div id="create-employee-msg" class="small mt-2"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Liste des employés</h2>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Actif</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody id="employees-tbody">
+              <tr><td colspan="3" class="text-muted">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div id="tab-stats" class="d-none">
+    <!-- Résumé -->
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="small text-muted">Total commandes (sur la période affichée)</div>
+            <div class="fs-3 fw-semibold" id="stats-total-orders">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="small text-muted">Chiffre d’affaires total (sur la période affichée)</div>
+            <div class="fs-3 fw-semibold" id="stats-total-revenue">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commandes par menu -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+          <h2 class="h5 m-0">Commandes par menu</h2>
+          <div class="small text-muted" id="orders-period-label">Période: toutes</div>
+        </div>
+
+        <form id="form-stats-orders" class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label">Du</label>
+            <input class="form-control" type="date" name="from">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label">Au</label>
+            <input class="form-control" type="date" name="to">
+          </div>
+          <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-dark" type="submit">Afficher</button>
+          </div>
+          <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-outline-dark" type="button" id="btn-orders-reset">Reset</button>
+          </div>
+        </form>
+
+        <div class="mt-3">
+          <canvas id="chart-orders-per-menu" height="140"></canvas>
+        </div>
+
+        <div class="small text-muted mt-2" id="orders-empty-hint"></div>
+      </div>
+    </div>
+
+    <!-- CA par menu -->
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+          <h2 class="h5 m-0">Chiffre d’affaires par menu</h2>
+          <div class="small text-muted" id="revenue-period-label">Période: toutes</div>
+        </div>
+
+        <form id="form-stats-revenue" class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label">Menu</label>
+            <select class="form-select" name="menuId" id="select-menu">
+              <option value="">Tous</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label">Du</label>
+            <input class="form-control" type="date" name="from">
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label">Au</label>
+            <input class="form-control" type="date" name="to">
+          </div>
+          <div class="col-12 col-md-1 d-grid">
+            <button class="btn btn-dark" type="submit">OK</button>
+          </div>
+          <div class="col-12 col-md-1 d-grid">
+            <button class="btn btn-outline-dark" type="button" id="btn-revenue-reset">Reset</button>
+          </div>
+        </form>
+
+        <div id="revenue-result" class="mt-3 fw-semibold"></div>
+
+        <div class="table-responsive mt-2">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Menu</th>
+                <th class="text-end">Commandes</th>
+                <th class="text-end">CA (€)</th>
+              </tr>
+            </thead>
+            <tbody id="revenue-tbody">
+              <tr><td colspan="3" class="text-muted">Aucune donnée</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

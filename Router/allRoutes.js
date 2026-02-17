@@ -17,7 +17,8 @@ export const allRoutes = [
     new Route("/reservation", "Reserver son menu", "/pages/commandes/reservation.html",["ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"], "/script/reservation.js"),
     new Route("/menu-detail", "Informations du menu", "/pages/menu-detail.html", ["ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"], "/script/menu-detail.js"),
     new Route("/employee", "Dashboard Employee", "/pages/employee/employee.html", ["ROLE_ADMIN","ROLE_EMPLOYEE"], "/script/employee/employee.js" ),
-    new Route("/menu-edit","Modifier un Menu", "/pages/employee/menu-edit.html",["ROLE_ADMIN", "ROLE_EMPLOYEE"], "/script/employee/menu-edit.js")
+    new Route("/menu-edit","Modifier un Menu", "/pages/employee/menu-edit.html",["ROLE_ADMIN", "ROLE_EMPLOYEE"], "/script/employee/menu-edit.js"),
+    new Route("/admin", "Espace Administrateur", "/pages/admin/admin.html", ["ROLE_ADMIN"], "/script/admin/admin.js")
 ];
 
 //Le titre s'affiche comme ceci : Route.titre - websitename

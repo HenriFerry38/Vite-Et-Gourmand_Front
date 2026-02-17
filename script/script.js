@@ -1,26 +1,33 @@
-const tokenCookieName = "accesstoken";
-const roleCookieName = "role";
+const TOKEN_KEY = "accesstoken";
+const ROLE_KEY = "role";
+
 const signoutBtn = document.getElementById("signoutBtn");
 const apiUrl = "http://127.0.0.1:8000/api/";
 
 signoutBtn.addEventListener("click", signout);
 
-function getRole(){
-    return getCookie(roleCookieName);
-}
-
-function signout(){
-    eraseCookie(tokenCookieName);
-    eraseCookie(roleCookieName);
-    window.location.reload();
-}
-
 function setToken(token){
-    setCookie(tokenCookieName, token, 7);
+    if(!token) return;
+    sessionStorage.setItem(TOKEN_KEY, token);
 }
 
 function getToken(){
-    return getCookie(tokenCookieName);
+    return sessionStorage.getItem(TOKEN_KEY);
+}
+
+function setRole(role){
+    if(!role) return;
+    sessionStorage.setItem(ROLE_KEY, role);
+}
+
+function getRole(){
+    return sessionStorage.getItem(ROLE_KEY);
+}
+
+function signout(){
+    sessionStorage.removeItem("accesstoken");
+    sessionStorage.removeItem("role");
+    window.location.reload();
 }
 
 function setCookie(name,value,days) {
@@ -90,10 +97,12 @@ function isSimpleUser(user) {
 async function refreshNavByRoles() {
   const linkEmployee = document.querySelector('[data-nav="employee"]');
   const linkAccount = document.querySelector('[data-nav="account"]');
+  const linkAdmin = document.querySelector('[data-nav="admin"]');
 
   // reset visuel (sécurité)
   if (linkEmployee) linkEmployee.classList.add("d-none");
   if (linkAccount) linkAccount.classList.add("d-none");
+  if (linkAdmin) linkAdmin.classList.add("d-none");
 
   if (!isConnected()) return;
 
@@ -104,9 +113,10 @@ async function refreshNavByRoles() {
     if (!res.ok) return;
 
     const me = await res.json();
-
+    const isAdmin = hasRole(me, "ROLE_ADMIN");
     const isStaff = hasRole(me, "ROLE_EMPLOYEE") || hasRole(me, "ROLE_ADMIN");
-
+    
+    if (linkAdmin) linkAdmin.classList.toggle("d-none", !isAdmin);
     if (linkEmployee) linkEmployee.classList.toggle("d-none", !isStaff);
     if (linkAccount) linkAccount.classList.toggle("d-none", !isSimpleUser(me));
   } catch (e) {
