@@ -77,10 +77,7 @@ async function loadHistorique() {
             : "";
 
         const avisBtn = (statutKey === "terminee")
-            ? `<a href="/editAvis?commandeId=${encodeURIComponent(c.id)}"
-                class="btn btn-primary btn-sm">
-                Laisser un avis
-            </a>`
+            ? `<span class="avis-slot" data-commande-id="${encodeURIComponent(c.id)}"></span>`
             : "";
 
         return `
@@ -118,6 +115,68 @@ async function loadHistorique() {
             </div>
         `;
         }).join("");
+
+        const slots = container.querySelectorAll(".avis-slot[data-commande-id]");
+
+        for (const slot of slots) {
+        const id = slot.getAttribute("data-commande-id");
+        if (!id) continue;
+
+        try {
+            const r = await fetch(`${apiUrl}avis/by-commande/${id}`, {
+                headers: { Accept: "application/json", "X-AUTH-TOKEN": getToken() }
+            });
+
+            // si l'API renvoie une erreur (403/500...), on laisse le bouton "Laisser un avis"
+            if (!r.ok) {
+                slot.innerHTML = `<a href="/avis/new?commandeId=${encodeURIComponent(id)}"
+                class="btn btn-primary btn-sm"
+                onclick="route(event)">Laisser un avis</a>`;
+                continue;
+            }
+
+            const data = await r.json();
+
+            if (data?.hasAvis) {
+                const statutAvis = String(data.statut ?? "").toLowerCase();
+
+                if (statutAvis === "en_attente") {
+                    slot.innerHTML = `
+                    <button class="btn btn-outline-warning btn-sm" disabled>
+                        Avis en attente 🕓
+                    </button>`;
+                } 
+                else if (statutAvis === "accepte") {
+                    slot.innerHTML = `
+                    <button class="btn btn-outline-success btn-sm" disabled>
+                        Avis publié ✅
+                    </button>`;
+                } 
+                else if (statutAvis === "refuse") {
+                    slot.innerHTML = `
+                    <button class="btn btn-outline-danger btn-sm" disabled>
+                        Avis refusé ❌
+                    </button>`;
+                } 
+                else {
+                    slot.innerHTML = `
+                    <button class="btn btn-outline-secondary btn-sm" disabled>
+                        Avis déposé
+                    </button>`;
+                }
+            } else {
+                slot.innerHTML = `<a href="/avis/new?commandeId=${encodeURIComponent(id)}"
+                class="btn btn-primary btn-sm"
+                onclick="route(event)">
+                Laisser un avis
+                </a>`;
+            }
+            } catch (e) {
+            slot.innerHTML = `<a href="/avis/new?commandeId=${encodeURIComponent(id)}"
+                class="btn btn-primary btn-sm"
+                onclick="route(event)">Laisser un avis</a>`;
+            }
+        }
     
     } catch (e) {
         loader.classList.add("d-none"); // 👈 aussi en cas d'erreur

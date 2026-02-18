@@ -184,6 +184,39 @@ function setupOrderForm(menu) {
     nbEl.min = String(min);
     if (!nbEl.value) nbEl.value = String(min);
   }
+  const toISODate = (d) => {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  };
+
+  const minDateJPlus2 = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 2);
+    return d;
+  };
+
+  const isAtLeastJPlus2 = (dateStr) => {
+    if (!dateStr) return false;
+    const chosen = new Date(dateStr + "T00:00:00");
+    return chosen.getTime() >= minDateJPlus2().getTime();
+  };
+
+  const dateEl = document.getElementById("datePrestation");
+  if (dateEl) {
+    dateEl.min = toISODate(minDateJPlus2());
+  }
+
+  const infoEl = document.getElementById("dateMinInfo");
+
+  const formatFR = (d) => {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+  };
+
+  if (infoEl) {
+    infoEl.textContent = `Date minimale : ${formatFR(minDateJPlus2())}`;
+  }
 
   const syncBtn = () => {
     if (!btn || !checkbox) return;
@@ -191,6 +224,7 @@ function setupOrderForm(menu) {
   };
   checkbox?.addEventListener("change", syncBtn);
   syncBtn();
+  
 
   form.onsubmit = async (e) => {
     e.preventDefault();
@@ -206,11 +240,18 @@ function setupOrderForm(menu) {
     if (!form.checkValidity()) return;
     if (!checkbox?.checked) return;
 
+    const chosenDate = dateEl?.value || "";
+    if (!isAtLeastJPlus2(chosenDate)) {
+      alert("Réservation possible uniquement à partir de J+2 (48h minimum).");
+      dateEl?.focus();
+      return;
+    }
+
     const payload = {
       menu_id: menu.id,
       adresse_prestation: document.getElementById("clientAdresseLivraison").value,
       nb_personne: Number(document.getElementById("nbPersonnes").value),
-      date_prestation: document.getElementById("datePrestation").value,
+      date_prestation: chosenDate,
       heure_prestation: document.getElementById("selectHour").value,
     };
 

@@ -778,7 +778,8 @@ async function loadAvis() {
   listEl.innerHTML = `<p class="text-muted mb-0">Chargement…</p>`;
 
   try {
-    const res = await fetch(`${apiUrl}avis?status=pending`, {
+    // ✅ ton endpoint + bon query param
+    const res = await fetch(`${apiUrl}avis?statut=en_attente`, {
       headers: { Accept: "application/json", "X-AUTH-TOKEN": getToken() },
     });
 
@@ -795,61 +796,112 @@ async function loadAvis() {
       return;
     }
 
+    // ✅ cards premium
     listEl.innerHTML = `
-      <div class="list-group">
-        ${avis.map(renderAvisItem).join("")}
+      <div class="row g-3">
+        ${avis.map(renderAvisCard).join("")}
       </div>
     `;
 
-    listEl.querySelectorAll("[data-avis-action='validate']").forEach((b) => {
-      b.addEventListener("click", async () => patchAvis(b.dataset.id, "validate"));
+    // bind actions
+    listEl.querySelectorAll("[data-avis-action='accepter']").forEach((b) => {
+      b.addEventListener("click", async () => postAvisAction(b.dataset.id, "accepter"));
     });
 
-    listEl.querySelectorAll("[data-avis-action='reject']").forEach((b) => {
-      b.addEventListener("click", async () => patchAvis(b.dataset.id, "reject"));
+    listEl.querySelectorAll("[data-avis-action='refuser']").forEach((b) => {
+      b.addEventListener("click", async () => postAvisAction(b.dataset.id, "refuser"));
     });
+
   } catch (e) {
     console.error(e);
     listEl.innerHTML = `<p class="text-danger mb-0">Impossible de charger les avis.</p>`;
   }
 }
 
-function renderAvisItem(a) {
+
+function renderAvisCard(a) {
   const id = escapeHtml(String(a.id ?? ""));
-  const who = escapeHtml(a.user?.email ?? a.email ?? "Client");
-  const note = escapeHtml(String(a.note ?? a.rating ?? "—"));
-  const msg = escapeHtml(a.commentaire ?? a.message ?? "");
+  const email = escapeHtml(a.user?.email ?? "—");
+  const note = Number(a.note ?? 0);
+  const desc = escapeHtml(a.description ?? "");
+
+  // commande (selon tes retours: parfois camelCase)
+  const c = a.commande ?? {};
+  const numero = escapeHtml(String(c.numeroCommande ?? c.numero_commande ?? c.id ?? "—"));
+
+  const datePrest = c.datePrestation ?? c.date_prestation ?? null;
+  const heurePrest = c.heurePrestation ?? c.heure_prestation ?? null;
+  const nb = c.nbPersonne ?? c.nb_personne ?? "—";
+  const adr = c.adressePrestation ?? c.adresse_prestation ?? "—";
+  const total = c.prixTotalFloat ?? c.prix_total ?? c.prixTotal ?? "—";
+  const menuTitre = c.menu?.titre ?? "—";
+
+  const dateTxt = datePrest ? new Date(datePrest).toLocaleDateString("fr-FR") : "—";
+  const heureTxt = heurePrest ? new Date(heurePrest).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—";
+
+  const stars = "★".repeat(Math.min(5, Math.max(0, note))) + "☆".repeat(5 - Math.min(5, Math.max(0, note)));
 
   return `
-    <div class="list-group-item">
-      <div class="d-flex justify-content-between align-items-start gap-2">
-        <div>
-          <div class="fw-semibold">${who} <span class="text-muted">• note ${note}</span></div>
-          <div class="small text-muted">${msg}</div>
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-secondary btn-sm" data-avis-action="validate" data-id="${id}">Valider</button>
-          <button class="btn btn-outline-secondary btn-sm" data-avis-action="reject" data-id="${id}">Refuser</button>
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <div>
+              <div class="fw-semibold">Avis #${id} <span class="text-muted">• Commande #${numero}</span></div>
+              <div class="small text-muted">Client: ${email}</div>
+            </div>
+            <span class="badge bg-warning text-dark">En attente</span>
+          </div>
+
+          <div class="mt-2">
+            <div class="small text-muted">Note</div>
+            <div class="fw-semibold">${stars}</div>
+            <div class="mt-2">${desc}</div>
+          </div>
+
+          <hr class="my-3" />
+
+          <div class="small">
+            <div><span class="text-muted">Menu:</span> ${escapeHtml(String(menuTitre))}</div>
+            <div><span class="text-muted">Prestation:</span> ${dateTxt} à ${heureTxt}</div>
+            <div><span class="text-muted">Personnes:</span> ${escapeHtml(String(nb))}</div>
+            <div><span class="text-muted">Adresse:</span> ${escapeHtml(String(adr))}</div>
+            <div><span class="text-muted">Total:</span> ${escapeHtml(String(total))}€</div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button class="btn btn-outline-danger btn-sm" data-avis-action="refuser" data-id="${id}">
+              Refuser
+            </button>
+            <button class="btn btn-success btn-sm" data-avis-action="accepter" data-id="${id}">
+              Accepter
+            </button>
+          </div>
         </div>
       </div>
     </div>
   `;
 }
 
-async function patchAvis(id, action) {
+
+async function postAvisAction(id, action) {
   try {
+    const ok = confirm(action === "refuser" ? "Refuser cet avis ?" : "Accepter cet avis ?");
+    if (!ok) return;
+
     const res = await fetch(`${apiUrl}avis/${encodeURIComponent(id)}/${action}`, {
-      method: "PATCH",
+      method: "POST",
       headers: { Accept: "application/json", "X-AUTH-TOKEN": getToken() },
     });
 
     if (!res.ok) {
       const txt = await res.text().catch(() => "");
-      console.error("PATCH avis error:", res.status, txt);
-      alert("Impossible de mettre à jour cet avis.");
+      console.error("POST avis action error:", res.status, txt);
+      alert("Impossible de traiter cet avis.");
       return;
     }
 
+    // ✅ reload liste
     await loadAvis();
   } catch (e) {
     console.error(e);

@@ -2,7 +2,7 @@ import Route from "./route.js";
 
 //Définir ici vos routes
 export const allRoutes = [
-    new Route("/", "Accueil", "/pages/home.html", []),
+    new Route("/", "Accueil", "/pages/home.html", [], "/script/home.js"),
     new Route("/menus", "Nos Menus", "/pages/menus.html",[], "/script/menu.js" ),
     new Route("/cgv", "Conditions Générales de Vente", "/pages/cgv.html",[]),
     new Route("/mentions_legales", "Mentions Légales", "/pages/mentions_legales.html",[]),
@@ -18,7 +18,8 @@ export const allRoutes = [
     new Route("/menu-detail", "Informations du menu", "/pages/menu-detail.html", ["ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"], "/script/menu-detail.js"),
     new Route("/employee", "Dashboard Employee", "/pages/employee/employee.html", ["ROLE_ADMIN","ROLE_EMPLOYEE"], "/script/employee/employee.js" ),
     new Route("/menu-edit","Modifier un Menu", "/pages/employee/menu-edit.html",["ROLE_ADMIN", "ROLE_EMPLOYEE"], "/script/employee/menu-edit.js"),
-    new Route("/admin", "Espace Administrateur", "/pages/admin/admin.html", ["ROLE_ADMIN"], "/script/admin/admin.js")
+    new Route("/admin", "Espace Administrateur", "/pages/admin/admin.html", ["ROLE_ADMIN"], "/script/admin/admin.js"),
+    new Route("/avis/new", "Laisser un avis", "/pages/avis/avis-new.html" , ["ROLE_USER"], "/script/avis/avis-new.js")
 ];
 
 //Le titre s'affiche comme ceci : Route.titre - websitename

@@ -70,6 +70,8 @@ const LoadContentPage = async () => {
   try {
     const path = window.location.pathname;
     const actualRoute = getRouteByUrl(path);
+    console.log("[router] path =", path);
+    console.log("[router] route =", actualRoute);
 
     // Guard accès
     const ok = await isAuthorized(actualRoute.authorize);
@@ -99,7 +101,10 @@ const LoadContentPage = async () => {
     // JS de page
     if (actualRoute.pathJS) {
       try {
-        const mod = await import(actualRoute.pathJS);
+        const moduleUrl = new URL(actualRoute.pathJS, window.location.origin).href;
+        console.log("Importing page module:", moduleUrl);
+
+        const mod = await import(moduleUrl);
         if (mod && typeof mod.init === "function") {
           await mod.init();
         }
