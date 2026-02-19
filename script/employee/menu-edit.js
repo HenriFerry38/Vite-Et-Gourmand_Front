@@ -1,5 +1,6 @@
 // menu-edit.js
 // Dépendances globales: apiUrl, isConnected(), getToken(), route()
+console.log("[menu-edit] module loaded");
 
 let MENU_ID = null;
 let currentMenu = null;
@@ -7,6 +8,7 @@ let allPlats = []; // cache plats existants
 let allAllergenes = [];
 
 export async function init() {
+  console.log("[menu-edit] init called, binding...");
   // Guard connecté
   if (!isConnected()) {
     const current = window.location.pathname + window.location.search;
@@ -19,6 +21,20 @@ export async function init() {
     alert("ID menu manquant.");
     window.location.href = "/employee?tab=menus";
     return;
+  }
+
+  await new Promise((r) => requestAnimationFrame(r)); // laisse 1 frame au DOM
+  await new Promise((r) => setTimeout(r, 0));         // micro-delay sécurité
+
+  const form = document.getElementById("menu-edit-form");
+  form?.addEventListener("submit", (e) => {
+    console.log("[menu-edit] submit fired");
+    submitEdit(e, MENU_ID);
+  });
+
+  if (form && form.dataset.bound !== "1") {
+    form.dataset.bound = "1";
+    form.addEventListener("submit", (e) => submitEdit(e, MENU_ID));
   }
 
   // bind actions (menu)
