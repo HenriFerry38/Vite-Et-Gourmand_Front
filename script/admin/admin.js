@@ -12,6 +12,7 @@ export async function init() {
 
   //3) employé
   bindEmployeesRefresh();
+  bindCreateEmployee();
   await loadEmployees();
 
   // 4) bind forms stats + reset 
@@ -258,6 +259,70 @@ function bindEmployeesRefresh() {
   const btn = document.getElementById("btn-reload-employees");
   if (!btn) return;
   btn.addEventListener("click", loadEmployees);
+}
+
+function bindCreateEmployee() {
+  const form = document.getElementById("form-create-employee");
+  const msg = document.getElementById("create-employee-msg");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); // 🔒 sinon reload page => rien ne part
+
+    const btn = form.querySelector('button[type="submit"]');
+    const fd = new FormData(form);
+    const email = String(fd.get("email") || "").trim();
+    const password = String(fd.get("password") || "");
+
+    if (msg) msg.textContent = "";
+    if (!email || !password) {
+      if (msg) msg.textContent = "Email et mot de passe requis.";
+      return;
+    }
+
+    // UI loading
+    if (btn) {
+      btn.disabled = true;
+      btn.dataset.label = btn.textContent;
+      btn.textContent = "Création...";
+    }
+
+    try {
+      const res = await fetch(`${apiUrl}admin/employees`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-AUTH-TOKEN": getToken(),
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        console.error("POST create employee error:", res.status, data);
+        const errMsg =
+          (data && (data.message || data.detail)) ||
+          `Erreur HTTP ${res.status}`;
+        if (msg) msg.textContent = `❌ ${errMsg}`;
+        return;
+      }
+
+      if (msg) msg.textContent = "✅ Employé créé.";
+      form.reset();
+      await loadEmployees();
+    } catch (err) {
+      console.error("create employee network error:", err);
+      if (msg) msg.textContent = "❌ Erreur réseau/API.";
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.label || "Créer";
+        delete btn.dataset.label;
+      }
+    }
+  });
 }
 
 async function loadEmployees() {
