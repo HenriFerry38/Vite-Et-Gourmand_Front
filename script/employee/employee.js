@@ -594,14 +594,13 @@ function renderCommandeRow(c) {
   const statut = escapeHtml(String(c.statut ?? "—"));
   const date = escapeHtml(String(c.date_prestation ?? "—"));
   const heure = escapeHtml(String(c.heure_prestation ?? "—"));
-  
+
+  // ✅ flags robustes (1/0, true/false, null)
   const pret = c.pret_materiel === true || c.pret_materiel === 1;
   const restitution = c.restitution_materiel === true || c.restitution_materiel === 1;
 
-  // on autorise le bouton dès que c’est livré OU en retour_materiel (à adapter si tu veux)
-  const statutOk = ["livree", "retour_materiel"].includes(String(c.statut));
-
-  const canConfirmRestitution = pret && !restitution && statutOk;
+  // ✅ ancien workflow: bouton UNIQUEMENT en "retour_materiel"
+  const canConfirmRestitution = pret && String(c.statut) === "retour_materiel" && !restitution;
 
   const restitutionBtn = canConfirmRestitution
     ? `<button class="btn btn-outline-success btn-sm"
@@ -614,7 +613,10 @@ function renderCommandeRow(c) {
   const nextStatut = guessNextStatut(c);
 
   const nextBtn = nextStatut
-    ? `<button class="btn btn-secondary btn-sm" data-action="next" data-id="${id}" data-next="${escapeHtml(nextStatut)}">
+    ? `<button class="btn btn-secondary btn-sm"
+              data-action="next"
+              data-id="${id}"
+              data-next="${escapeHtml(nextStatut)}">
          Étape suivante
        </button>`
     : "";
@@ -638,6 +640,7 @@ function renderCommandeRow(c) {
   `;
 }
 
+
 function guessNextStatut(commande) {
   const s = String(commande?.statut ?? "");
 
@@ -647,17 +650,19 @@ function guessNextStatut(commande) {
   const restitution =
     commande?.restitution_materiel === true || commande?.restitution_materiel === 1;
 
-  const needsRestitution = pret && !restitution;
-
-  const order = needsRestitution
+  const order = pret
     ? ["en_attente", "acceptee", "preparation", "livraison", "livree", "retour_materiel", "terminee"]
     : ["en_attente", "acceptee", "preparation", "livraison", "livree", "terminee"];
 
   const idx = order.indexOf(s);
-  if (idx === -1) return null;
-  if (idx === order.length - 1) return null;
+  if (idx === -1 || idx === order.length - 1) return null;
 
-  return order[idx + 1];
+  const next = order[idx + 1];
+
+  // garde-fou: si on veut finir mais restitution pas confirmée (cas prêt matériel)
+  if (next === "terminee" && pret && !restitution) return null;
+
+  return next;
 }
 
 async function patchStatut(id, statut) {
