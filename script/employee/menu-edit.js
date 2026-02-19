@@ -561,13 +561,15 @@ function openEditPlatModal(plat) {
   bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
-document.getElementById("btn-save-plat")?.addEventListener("click", async () => {
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("#btn-save-plat");
+  if (!btn) return; // pas notre bouton
+
   const id = Number(document.getElementById("edit-plat-id").value);
   const titre = document.getElementById("edit-plat-titre").value.trim();
   const categorie = document.getElementById("edit-plat-categorie").value;
 
   const msg = document.getElementById("edit-plat-msg");
-  const btn = document.getElementById("btn-save-plat");
 
   if (!titre) {
     if (msg) {
@@ -581,10 +583,10 @@ document.getElementById("btn-save-plat")?.addEventListener("click", async () => 
     .map(i => Number(i.value))
     .filter(n => !Number.isNaN(n));
 
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "Enregistrement…";
-  }
+  btn.disabled = true;
+  const oldText = btn.textContent;
+  btn.textContent = "Enregistrement…";
+
   if (msg) {
     msg.textContent = "Enregistrement…";
     msg.className = "small mt-2 text-muted";
@@ -602,19 +604,18 @@ document.getElementById("btn-save-plat")?.addEventListener("click", async () => 
     await loadAllPlats();
 
     bootstrap.Modal.getInstance(document.getElementById("modal-edit-plat"))?.hide();
-  } catch (e) {
-    console.error(e);
+  } catch (e2) {
+    console.error(e2);
     if (msg) {
-      msg.textContent = `Erreur: ${e.message}`;
+      msg.textContent = `Erreur: ${e2.message}`;
       msg.className = "small mt-2 text-danger";
     }
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = "Enregistrer";
-    }
+    btn.disabled = false;
+    btn.textContent = oldText || "Enregistrer";
   }
 });
+
 
 function getMenuPlatIds(menu) {
   const plats = Array.isArray(menu?.plats) ? menu.plats : [];

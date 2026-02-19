@@ -103,7 +103,13 @@ Le projet peut être lancé avec :
 ou  
 - Live Server  
 - Apache  
-- Tout autre serveur local  
+- Tout autre serveur local
+
+- ou par terminal:
+```bash
+cd Vite-Et-Gourmand_Front
+php -S localhost:3000
+```
 
 ---
 

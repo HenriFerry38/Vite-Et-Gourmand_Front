@@ -595,7 +595,14 @@ function renderCommandeRow(c) {
   const date = escapeHtml(String(c.date_prestation ?? "—"));
   const heure = escapeHtml(String(c.heure_prestation ?? "—"));
   
-  const canConfirmRestitution = String(c.statut) === "retour_materiel" && !c.restitution_materiel;
+  const pret = c.pret_materiel === true || c.pret_materiel === 1;
+  const restitution = c.restitution_materiel === true || c.restitution_materiel === 1;
+
+  // on autorise le bouton dès que c’est livré OU en retour_materiel (à adapter si tu veux)
+  const statutOk = ["livree", "retour_materiel"].includes(String(c.statut));
+
+  const canConfirmRestitution = pret && !restitution && statutOk;
+
   const restitutionBtn = canConfirmRestitution
     ? `<button class="btn btn-outline-success btn-sm"
               data-action="restitution"
@@ -633,7 +640,14 @@ function renderCommandeRow(c) {
 
 function guessNextStatut(commande) {
   const s = String(commande?.statut ?? "");
-  const needsRestitution = commande?.restitution_materiel === true;
+
+  const pret =
+    commande?.pret_materiel === true || commande?.pret_materiel === 1;
+
+  const restitution =
+    commande?.restitution_materiel === true || commande?.restitution_materiel === 1;
+
+  const needsRestitution = pret && !restitution;
 
   const order = needsRestitution
     ? ["en_attente", "acceptee", "preparation", "livraison", "livree", "retour_materiel", "terminee"]
