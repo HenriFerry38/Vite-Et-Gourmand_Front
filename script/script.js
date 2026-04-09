@@ -2,7 +2,7 @@ const TOKEN_KEY = "accesstoken";
 const ROLE_KEY = "role";
 
 const signoutBtn = document.getElementById("signoutBtn");
-const apiUrl = "http://127.0.0.1:8000/api/";
+const apiUrl = "https://vite-et-gourmand-api-dep-103e633b85d5.herokuapp.com/api/";
 
 signoutBtn.addEventListener("click", signout);
 

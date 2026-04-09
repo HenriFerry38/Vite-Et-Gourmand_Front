@@ -3,48 +3,51 @@ const passwordInput = document.getElementById("PasswordInput");
 const btnConnexion = document.getElementById("btnConnexion");
 const formConnexion = document.getElementById("formulaireConnexion");
 
-btnConnexion.addEventListener("click", checkCredentials);
+async function checkCredentials(e) {
+  e?.preventDefault();
 
-function checkCredentials(){
-    const dataForm = new FormData(formConnexion);
+  const dataForm = new FormData(formConnexion);
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+  const payload = {
+    username: dataForm.get("Email"),
+    password: dataForm.get("Password"),
+  };
 
-    const raw = JSON.stringify({
-        "username": dataForm.get("Email"),
-        "password": dataForm.get("Password"),
+  try {
+    const res = await fetch(apiUrl + "login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
     });
 
-    const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow"
-    };
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      console.error("Login failed:", res.status, txt);
 
-    fetch(apiUrl+"login", requestOptions)
-    .then(response => {
-        if(response.ok){
-            return response.json();
-        }
-        else{
-            mailInput.classList.add("is-invalid");
-            passwordInput.classList.add("is-invalid");
-        }
-    })
-    .then(result => { 
-        //appel de l'api pour verfifer les credentials
-         //Ici on recuperere le token
-        const token = result.apiToken;
-        setToken(token);
-        setRole(result.roles?.[0]);
+      mailInput.classList.add("is-invalid");
+      passwordInput.classList.add("is-invalid");
+      return;
+    }
 
-        showAndHideElementsForRoles();
-        refreshNavByRoles();
+    const result = await res.json();
 
-        window.location.replace("/");
-        
-    })
-    .catch((error) => console.error(error));
+    const token = result.apiToken;
+    if (!token) {
+      console.error("No apiToken in response:", result);
+      return;
+    }
+
+    setToken(token);
+    setRole(result.roles?.[0]);
+
+    await Promise.resolve(showAndHideElementsForRoles());
+    await Promise.resolve(refreshNavByRoles());
+
+    window.location.replace("/vite-et-gourmand/");
+  } catch (err) {
+    console.error("Login error:", err);
+  }
 }
+
+btnConnexion.addEventListener("click", checkCredentials);
+formConnexion?.addEventListener("submit", checkCredentials);

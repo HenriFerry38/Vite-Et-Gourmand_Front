@@ -68,8 +68,7 @@
   max-width: 860px;
   border-radius: 16px;
   background: rgba(200, 200, 200, 0.6);
-  -webkit-backdrop-filter: blur(2px);
-          backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
   color: white;
 }
 
@@ -90,22 +89,22 @@
   }
 }
 @media (min-width: 1200px) {
-  .engagements {
-    background-size: 80%;
-  }
   .engagements h2 {
     font-size: 1.5rem;
+  }
+  .engagements {
+    background-size: 80%;
   }
   .engagements-list {
     font-size: 1.5rem;
   }
 }
 @media (min-width: 2560px) {
-  .engagements {
-    background-size: 80%;
-  }
   .engagements h2 {
     font-size: 2rem;
+  }
+  .engagements {
+    background-size: 80%;
   }
   .engagements-list {
     font-size: 2rem;

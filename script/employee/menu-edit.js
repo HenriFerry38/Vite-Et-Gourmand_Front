@@ -83,17 +83,17 @@ function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
   const v = (photoValue ?? "").trim();
   if (!v) return fallback;
 
-  const baseUrl = apiUrl.replace(/api\/?$/, "");
+  const baseUrl = apiUrl.replace(/\/api\/?$/, "");
 
   if (v.startsWith("http://") || v.startsWith("https://")) return v;
 
-  if (v.startsWith("/uploads/")) return `${baseUrl}${v.replace(/^\//, "")}`;
+  if (v.startsWith("/uploads/")) return `${baseUrl}${v}`;
   if (v.startsWith("/images/")) return v;
 
-  if (v.startsWith("uploads/")) return `${baseUrl}${v}`;
+  if (v.startsWith("uploads/")) return `${baseUrl}/${v}`;
   if (v.startsWith("images/")) return `/${v}`;
 
-  return `${baseUrl}uploads/plats/${v}`;
+  return `${baseUrl}/uploads/plats/${v}`;
 }
 
 /* ---------------- API ---------------- */
@@ -123,6 +123,10 @@ async function apiAuthFetch(path, options = {}) {
 async function uploadPlatPhoto(platId, file) {
   const fd = new FormData();
   fd.append("photo", file);
+
+  for (const [key, value] of fd.entries()) {
+    console.log("FD", key, value);
+  }
 
   const res = await fetch(`${apiUrl}plat/${encodeURIComponent(platId)}/photo`, {
     method: "POST",
@@ -488,6 +492,10 @@ function renderMenuPlats(menu) {
         btnUpload.textContent = "Upload…";
 
         try {
+          console.log("file =", file);
+          console.log("name =", file?.name);
+          console.log("size =", file?.size);
+          console.log("type =", file?.type);
           await uploadPlatPhoto(p.id, file);
           await loadMenu(MENU_ID);   // refresh menu + photos
           await loadAllPlats();      // refresh select

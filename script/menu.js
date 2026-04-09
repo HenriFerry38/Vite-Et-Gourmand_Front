@@ -60,23 +60,17 @@ function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
   const v = (photoValue ?? "").trim();
   if (!v) return fallback;
 
-  // base = http://127.0.0.1:8000/  (on retire /api/)
-  const baseUrl = apiUrl.replace(/api\/?$/, "");
+  const baseUrl = apiUrl.replace(/\/api\/?$/, "");
 
-  // 1) URL absolue
   if (v.startsWith("http://") || v.startsWith("https://")) return v;
 
-  // 2) chemins absolus connus
-  if (v.startsWith("/uploads/")) return `${baseUrl}${v.replace(/^\//, "")}`; // -> http://.../uploads/...
+  if (v.startsWith("/uploads/")) return `${baseUrl}${v}`;
   if (v.startsWith("/images/")) return v;
 
-  // 3) chemins relatifs
-  if (v.startsWith("uploads/")) return `${baseUrl}${v}`; // -> http://.../uploads/...
+  if (v.startsWith("uploads/")) return `${baseUrl}/${v}`;
   if (v.startsWith("images/")) return `/${v}`;
 
-  // 4) sinon: c'est un filename stocké en BDD (ex: plat_12_abcd.jpg)
-  // -> on pointe sur le back
-  return `${baseUrl}uploads/plats/${v}`;
+  return `${baseUrl}/uploads/plats/${v}`;
 }
 
 function getPlatLabel(p) {
@@ -101,7 +95,7 @@ function fillMenuCarousel(clone, menu, plats) {
   if (!inner || !indicators) return;
 
   // plats avec photo
-  const items = (plats ?? []).filter((p) => p?.photo);
+  const items = plats ?? [];
   const activeIndex = Math.max(
     items.findIndex((p) => normalizeCat(p.categorie) === "plat"),
     0
@@ -154,7 +148,7 @@ function fillMenuCarousel(clone, menu, plats) {
             class="d-block w-100 veg-menu__photo"
             src="${src}"
             alt="${escapeHtml(label)}"
-            onerror="this.onerror=null;this.src='/images/placeholder.jpg';"
+            onerror="this.onerror=null;this.src='images/placeholder.jpg';"
           />
           <div class="carousel-caption d-block">
             <div class="px-2 py-1 rounded"
@@ -214,15 +208,15 @@ function renderMenu(menu) {
   // ✅ lien menu-detail (public)
   const link = clone.querySelector(".menu-link");
   if (link) {
-    link.href = `/menu-detail?id=${encodeURIComponent(menu.id)}`;
+    link.href = `menu-detail?id=${encodeURIComponent(menu.id)}`;
     link.textContent = "Réserver ce menu";
 
     link.addEventListener("click", (e) => {
       if (!isConnected()) {
         e.preventDefault();
         alert("Pour réserver, veuillez vous connecter.");
-        const target = `/menu-detail?id=${menu.id}`;
-        window.location.href = `/signin?redirect=${encodeURIComponent(target)}`;
+        const target = `menu-detail?id=${menu.id}`;
+        window.location.href = `signin?redirect=${encodeURIComponent(target)}`;
         return;
       }
       if (typeof route === "function") route(e);

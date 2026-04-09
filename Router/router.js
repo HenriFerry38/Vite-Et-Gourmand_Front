@@ -1,8 +1,18 @@
 import Route from "./route.js";
 import { allRoutes, websiteName } from "./allRoutes.js";
 
+const BASE_PATH = "/vite-et-gourmand";
+
+function normalizePath(pathname) {
+  if (pathname.startsWith(BASE_PATH)) {
+    const p = pathname.slice(BASE_PATH.length);
+    return p === "" ? "/" : p;
+  }
+  return pathname;
+}
+
 // Route 404
-const route404 = new Route("404", "Page introuvable", "/pages/404.html", []);
+const route404 = new Route("404", "Page introuvable", "pages/404.html", []);
 
 /* ---------------- LOADER ---------------- */
 
@@ -68,7 +78,7 @@ const LoadContentPage = async () => {
   showLoader();
 
   try {
-    const path = window.location.pathname;
+    const path = normalizePath(window.location.pathname);
     const actualRoute = getRouteByUrl(path);
     console.log("[router] path =", path);
     console.log("[router] route =", actualRoute);
@@ -76,7 +86,7 @@ const LoadContentPage = async () => {
     // Guard accès
     const ok = await isAuthorized(actualRoute.authorize);
     if (!ok) {
-      window.location.replace("/");
+      window.location.replace(BASE_PATH +"/");
       return;
     }
 
@@ -93,15 +103,15 @@ const LoadContentPage = async () => {
     }
 
     // Script spécifique (editCommande)
-    if (window.location.pathname === "/editCommande") {
-      const mod = await import("/script/commandeHoraire.js");
+    if (normalizePath(window.location.pathname) === "/editCommande") {
+      const mod = await import(new URL("script/commandeHoraire.js", document.baseURI).href);
       if (mod?.initCommandeHoraire) mod.initCommandeHoraire();
     }
 
     // JS de page
     if (actualRoute.pathJS) {
       try {
-        const moduleUrl = new URL(actualRoute.pathJS, window.location.origin).href;
+        const moduleUrl = new URL(actualRoute.pathJS, document.baseURI).href;
         console.log("Importing page module:", moduleUrl);
 
         const mod = await import(moduleUrl);

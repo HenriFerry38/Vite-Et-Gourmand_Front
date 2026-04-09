@@ -334,23 +334,17 @@ function resolvePhotoSrc(photoValue, fallback = "/images/placeholder.jpg") {
   const v = (photoValue ?? "").trim();
   if (!v) return fallback;
 
-  const baseUrl = apiUrl.replace(/api\/?$/, "");
+  const baseUrl = apiUrl.replace(/\/api\/?$/, "");
 
-  // 1) URL absolue
   if (v.startsWith("http://") || v.startsWith("https://")) return v;
 
-  // 2) chemins absolus
-  // /uploads/... doit venir du back
-  if (v.startsWith("/uploads/")) return `${baseUrl}${v.replace(/^\//, "")}`;
-  // /images/... reste du front
+  if (v.startsWith("/uploads/")) return `${baseUrl}${v}`;
   if (v.startsWith("/images/")) return v;
 
-  // 3) chemins relatifs
-  if (v.startsWith("uploads/")) return `${baseUrl}${v}`;
+  if (v.startsWith("uploads/")) return `${baseUrl}/${v}`;
   if (v.startsWith("images/")) return `/${v}`;
 
-  // 4) sinon => filename stocké en BDD
-  return `${baseUrl}uploads/plats/${v}`;
+  return `${baseUrl}/uploads/plats/${v}`;
 }
 
 function getPlatLabel(p) {

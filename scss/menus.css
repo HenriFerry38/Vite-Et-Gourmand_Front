@@ -407,8 +407,7 @@
 .veg-box__items li {
   overflow-wrap: anywhere;
   word-break: normal;
-  -webkit-hyphens: auto;
-          hyphens: auto;
+  hyphens: auto;
 }
 
 /* Top: sur mobile, on passe en colonne (moins compressé) */
@@ -492,8 +491,7 @@
 }
 .veg-box__items li {
   overflow-wrap: anywhere;
-  -webkit-hyphens: auto;
-          hyphens: auto;
+  hyphens: auto;
 }
 
 @media (min-width: 2560px) {

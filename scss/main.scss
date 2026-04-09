@@ -1,5 +1,5 @@
 
-@import url("/node_modules/bootstrap-icons/font/bootstrap-icons.css");
+
 @import 'custom';
 
 
@@ -129,7 +129,7 @@ textarea{
 }
 
 
-@import "../scss/home.css";
-@import "../scss/menus.css";
-@import "../scss/signin.css";
-@import "../scss/menu-detail.css";
+@import "./home.css";
+@import "./menus.css";
+@import "./signin.css";
+@import "./menu-detail.css";
