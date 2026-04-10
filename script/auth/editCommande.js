@@ -1,5 +1,5 @@
 // /script/commandes/editCommande.js
-const API = "http://127.0.0.1:8000/api";
+const API = "https://vite-et-gourmand-api-dep-103e633b85d5.herokuapp.com/api";
 
 function $(id) {
   return document.getElementById(id);
